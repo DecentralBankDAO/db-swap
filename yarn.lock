@@ -8002,6 +8002,11 @@ react-i18next@^11.15.2:
     html-escaper "^2.0.2"
     html-parse-stringify "^3.0.1"
 
+react-icons@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.4.0.tgz#a13a8a20c254854e1ec9aecef28a95cdf24ef703"
+  integrity sha512-fSbvHeVYo/B5/L4VhB7sBA1i2tS8MkT0Hb9t2H1AVPkwGfVHLJCqyr2Py9dKMxsyM63Eng1GkdZfbWj+Fmv8Rg==
+
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
@@ -8016,6 +8021,11 @@ react-is@^18.0.0:
   version "18.1.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.1.0.tgz#61aaed3096d30eacf2a2127118b5b41387d32a67"
   integrity sha512-Fl7FuabXsJnV5Q1qIOQwx/sagGF18kogb4gpfcG4gjLBWO0WDiiz1ko/ExayuxE7InyQkBLkxRFG5oxY6Uu3Kg==
+
+react-micro-modal@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/react-micro-modal/-/react-micro-modal-2.0.2.tgz#79831de326babd0dd3c4b3c9f9e16378a9971e27"
+  integrity sha512-PucE/ap3NiTBdeZXsrYFr0JKXjVMV5cdwaB2g/pHzMg8KKcERAaEhBnRyCxGR6G5ZfnPoE0cnFrNf4+TY+gf2A==
 
 react-near@^2.6.2:
   version "2.6.2"

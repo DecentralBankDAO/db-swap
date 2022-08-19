@@ -12,7 +12,25 @@ body {
     /* background-image: url(../assets/svg/bg.svg); */
     background-size: cover;
     overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: darkgrey transparent;
 }
+
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+    border-radius: 3px;
+  }
+  
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #C1B582;
+    border-radius: 8px;
+  }
+
 @font-face {
     font-family: 'EksellDisplaySubset';
     src: local('EksellDisplaySubset'), url('./fonts/EksellDisplaySubset.woff2') format('woff2');

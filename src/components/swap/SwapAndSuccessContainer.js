@@ -1,28 +1,30 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import Container from './common/Container';
-import { currentToken } from './helpers';
-import Success from './views/Success';
-import SwapPage from './views/SwapPage';
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import styled from "styled-components";
+import Container from "./common/Container";
+import { currentToken } from "./helpers";
+import Success from "./views/Success";
+import SwapPage from "./views/SwapPage";
 
-
-import { actions } from '../../redux/slices/tokens';
-import { fetchNearBalance } from '../../redux/slices/near';
-import { useNearWallet } from 'react-near';
-import { useLocation, useNavigate } from 'react-router';
-import { formatNearAmount, formatTokenAmount } from './formatToken';
-import Loader from '../../App/Loader';
+import { actions } from "../../redux/slices/tokens";
+import { fetchNearBalance } from "../../redux/slices/near";
+import { useNearWallet } from "react-near";
+import { useLocation, useNavigate } from "react-router";
+import { formatNearAmount, formatTokenAmount } from "./formatToken";
+import Loader from "../../App/Loader";
 
 const { REACT_APP_NEAR_ENV } = process.env;
 
-const explorerUrl = REACT_APP_NEAR_ENV === 'testnet' ? 'https://explorer.testnet.near.org' : 'https://explorer.mainnet.near.org'
+const explorerUrl =
+    REACT_APP_NEAR_ENV === "testnet"
+        ? "https://explorer.testnet.near.org"
+        : "https://explorer.mainnet.near.org";
 
 const { fetchTokens } = actions;
 
 export const VIEWS_SWAP = {
-    MAIN: 'main',
-    SUCCESS: 'success'
+    MAIN: "main",
+    SUCCESS: "success",
 };
 
 const StyledContainer = styled(Container)`
@@ -53,7 +55,7 @@ const StyledContainer = styled(Container)`
         flex-direction: column;
         border-radius: 50%;
         margin: 20px 0;
-        .iconSwap{
+        .iconSwap {
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -75,8 +77,7 @@ const StyledContainer = styled(Container)`
             cursor: pointer;
             :hover {
                 path {
-                    fill: #C1B583;
-                   
+                    fill: #c1b583;
                 }
             }
             #left {
@@ -116,134 +117,164 @@ const StyledContainer = styled(Container)`
 `;
 
 const formatDeposit = (method, res) => {
-    const amount = JSON.parse(atob(res.transaction.actions[0].FunctionCall.args)).amount || 0;
-    return method === 'withdraw'
-        ? formatTokenAmount(amount, 18) 
-        : formatTokenAmount(amount, 6)
-}
+    const amount =
+        JSON.parse(atob(res.transaction.actions[0].FunctionCall.args)).amount ||
+        0;
+    return method === "withdraw"
+        ? formatTokenAmount(amount, 18)
+        : formatTokenAmount(amount, 6);
+};
 
 const formatError = (value) => {
     return JSON.stringify(value);
-}
+};
 
 const SwapAndSuccessContainer = ({
     fungibleTokensList,
     accountId,
     multipliers,
 }) => {
-    const [from, setFrom] = useState({ onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
-    const [to, setTo] = useState({ onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
+    // const [from, setFrom] = useState({ onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
+    // const [to, setTo] = useState({ onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
     const [activeView, setActiveView] = useState(VIEWS_SWAP.MAIN);
-    const [methodFromHash, setMethodFromHash] = useState('buy')
-    const [errorFromHash, setErrorFromHash] = useState('')
-    const [deposit, setDeposit] = useState('0')
-    const [successValue, setSuccessValue] = useState(0)
-    const [loadHash, setLoadHash] = useState(false)
+    const [textInfo, setTextInfo] = useState({
+        receiver: "",
+        sender: "",
+    });
+    const [errorFromHash, setErrorFromHash] = useState("");
+    const [deposit, setDeposit] = useState("0");
+    const [successValue, setSuccessValue] = useState(0);
+    const [loadHash, setLoadHash] = useState(false);
     const wallet = useNearWallet();
-    const dispatch = useDispatch()
-    const { search } = useLocation()
-    const params = new URLSearchParams(search)
-    const transactionHash = params.get('transactionHashes') || ''
-    const navigate = useNavigate()
-    
-    const multiplier = 1;
-    useEffect(() => {
-        
-        if(accountId) {
-            setFrom(currentToken(fungibleTokensList, from?.onChainFTMetadata?.symbol || 'USDT'));
-            setTo(currentToken(fungibleTokensList, to?.onChainFTMetadata?.symbol || 'USN'));
-        }
-    }, [fungibleTokensList]);
+    const dispatch = useDispatch();
+    const { search } = useLocation();
+    const params = new URLSearchParams(search);
+    const transactionHash = params.get("transactionHashes") || "";
+    const navigate = useNavigate();
 
+    const multiplier = 1;
+    // useEffect(() => {
+
+    //     if(accountId) {
+    //         setFrom(currentToken(fungibleTokensList, from?.onChainFTMetadata?.symbol || 'USDT'));
+    //         setTo(currentToken(fungibleTokensList, to?.onChainFTMetadata?.symbol || 'USN'));
+    //     }
+    // }, [fungibleTokensList]);
+  
     useEffect(() => {
         const getHash = async (hash) => {
             try {
-                setLoadHash(true)
-                const res = await wallet._near.connection.provider.txStatus(hash, wallet.getAccountId())
-                console.log('res', res);
-                setMethodFromHash(res.transaction.actions[0].FunctionCall.method_name)
-                setDeposit(formatDeposit(res.transaction.actions[0].FunctionCall.method_name, res))
-                setLoadHash(false)
-                setActiveView('success')
-                if(res.status.Failure) {
-                    setErrorFromHash(formatError(res.status.Failure?.ActionError))
-                    setActiveView('success')
+                setLoadHash(true);
+                const res = await wallet._near.connection.provider.txStatus(
+                    hash,
+                    wallet.getAccountId()
+                );
+                setTextInfo({
+                    sender: res.transaction.receiver_id,
+                    receiver:
+                        JSON.parse(
+                            atob(res.transaction.actions[0].FunctionCall.args)
+                        ).asset_id ||
+                        JSON.parse(
+                            atob(res.transaction.actions[0].FunctionCall.args)
+                        ).receiver_id,
+                });
+                setDeposit(
+                    formatDeposit(
+                        res.transaction.actions[0].FunctionCall.method_name,
+                        res
+                    )
+                );
+                setLoadHash(false);
+                setActiveView("success");
+                if (res.status.Failure) {
+                    setErrorFromHash(
+                        formatError(res.status.Failure?.ActionError)
+                    );
+                    setActiveView("success");
                 }
             } catch (e) {
-                console.log('error', e);
-                setErrorFromHash(formatError(e.message))
-                setActiveView('success')
+                console.log("error", e);
+                setErrorFromHash(formatError(e.message));
+                setActiveView("success");
             } finally {
-                setLoadHash(false)
+                setLoadHash(false);
             }
-        }
+        };
 
-        if(wallet && transactionHash) {
+        if (wallet && transactionHash) {
             let hash;
-            if(transactionHash.includes(',')) {
-                hash = transactionHash.split(',')[1]
+            if (transactionHash.includes(",")) {
+                hash = transactionHash.split(",")[1];
             } else {
-                hash = transactionHash
+                hash = transactionHash;
             }
-            getHash(hash)
+            getHash(hash);
         }
-        
-    },[search, wallet])
+    }, [search, wallet]);
 
     const onHandleBackToSwap = useCallback(async () => {
         await dispatch(fetchTokens({ accountId }));
-        await dispatch(fetchNearBalance(accountId))
-        navigate('/swap')
-        setActiveView('main');
+        await dispatch(fetchNearBalance(accountId));
+        navigate("/swap");
+        setActiveView("main");
     }, []);
     return (
         <>
-        {loadHash
-            ?  <div style={{ width: 400, height: 400}}/>
-            : <>
-            <StyledContainer className='small-centered'>
-            {activeView === VIEWS_SWAP.MAIN && !transactionHash && (
-                <SwapPage
-                    multipliers={multipliers}
-                    setActiveView={setActiveView}
-                    setErrorFromHash={setErrorFromHash}
-                    accountId={accountId}
-                    from={from}
-                    multiplier={multiplier}
-                    to={to}
-                    onSwap={() => {
-                        if (from?.onChainFTMetadata?.symbol === 'USDT') {
-                            setFrom(accountId 
-                                ? currentToken(fungibleTokensList, 'USN') 
-                                : { onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
-                            setTo(accountId ? fungibleTokensList[1] : { onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
-                        } else {
-                            setFrom(accountId ? fungibleTokensList[1] : { onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
-                            setTo(accountId 
-                                ? currentToken(fungibleTokensList, 'USN') 
-                                : { onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
-                        }
-                    }}
-                />
+            {loadHash ? (
+                <div style={{ width: 400, height: 400 }} />
+            ) : (
+                <>
+                    <StyledContainer className="small-centered">
+                        {activeView === VIEWS_SWAP.MAIN && !transactionHash && (
+                            <SwapPage
+                                fungibleTokensList={fungibleTokensList}
+                                multipliers={multipliers}
+                                setActiveView={setActiveView}
+                                setErrorFromHash={setErrorFromHash}
+                                accountId={accountId}
+                                // from={from}
+                                multiplier={multiplier}
+                                // to={to}
+                                // onSwap={() => {
+                                //     setFrom(to);
+                                //     setTo(from);
+                                //     if (from?.onChainFTMetadata?.symbol === 'USDT') {
+                                //         setFrom(accountId
+                                //             ? currentToken(fungibleTokensList, 'USN')
+                                //             : { onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
+                                //         setTo(accountId ? fungibleTokensList[1] : { onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
+                                //     } else {
+                                //         setFrom(accountId ? fungibleTokensList[1] : { onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
+                                //         setTo(accountId
+                                //             ? currentToken(fungibleTokensList, 'USN')
+                                //             : { onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
+                                //     }
+                                // }}
+                            />
+                        )}
+                        {activeView === VIEWS_SWAP.SUCCESS && !loadHash && (
+                            <Success
+                                successValue={successValue}
+                                errorFromHash={errorFromHash}
+                                onClickGoToExplorer={() =>
+                                    window.open(
+                                        `${explorerUrl}/transactions/${transactionHash}`,
+                                        "_blank"
+                                    )
+                                }
+                                inputValueFrom={deposit}
+                                textInfo={textInfo}
+                                handleBackToSwap={async () => {
+                                    // setInputValueFrom('');
+                                    await onHandleBackToSwap();
+                                }}
+                            />
+                        )}
+                    </StyledContainer>
+                </>
             )}
-            {activeView === VIEWS_SWAP.SUCCESS && !loadHash && (
-                <Success
-                    successValue={successValue}
-                    errorFromHash={errorFromHash}
-                    onClickGoToExplorer={() => window.open(`${explorerUrl}/transactions/${transactionHash}`, '_blank')}
-                    inputValueFrom={deposit}
-                    symbol={methodFromHash}
-                    handleBackToSwap={async () => {
-                        // setInputValueFrom('');
-                        await onHandleBackToSwap();
-                    }}
-                />
-            )}
-        </StyledContainer>
-            </>}
-        
         </>
-        
     );
 };
 

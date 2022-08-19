@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import { formatTokenAmount } from './formatToken';
+import React from "react";
+import styled from "styled-components";
+import { formatTokenAmount } from "./formatToken";
 
-import { MinimumReceived } from './helpers';
-import SwapInfoItem from './SwapInfoItem';
+import { MinimumReceived } from "./helpers";
+import SwapInfoItem from "./SwapInfoItem";
 
 const pairPrice = (isNear, exchangeRate) => {
     const price = isNear ? 1 * exchangeRate : 1 / exchangeRate;
@@ -34,20 +34,14 @@ function formatAmount({ amount, symbol, tradingFee, value }) {
     return `${value} ${symbol}`;
 }
 
-function SwapInfoContainer({
-   amount,
-   token,
-   slippageValue,
-   tradingFee,
-   isLoading,
-   min,
-}) {
+function SwapInfoContainer({ amount, symbols, tradingFee, min }) {
     const feePercent = 0.01;
-    const isUsdt = token === 'USDT';
+    // const isUsdt = token === "USDT";
     const expectedAmount = +amount * 1;
-    const symbol = !isUsdt ? 'USDT' : 'USN';
-    const sliceAmount = amount.length > 10 ? amount.slice(0, 10) + '...' : amount
-    
+    // const symbol = !isUsdt ? "USDT" : "USN";
+    const sliceAmount =
+        amount.length > 10 ? amount.slice(0, 10) + "..." : amount;
+
     return (
         <StyledContainer>
             {/* <SwapInfoItem
@@ -57,34 +51,33 @@ function SwapInfoContainer({
                 setSlippageValue={setSlippageValue}
             /> */}
             <SwapInfoItem
-                leftText={'Pair price'}
-                rightText={`1 ${isUsdt ? 'USDT' : 'USN'} = 1 ${symbol}`}
+                leftText={"Pair price"}
+                rightText={`1 ${symbols.from} = 1 ${symbols.to}`}
                 // rightText={`1 ${isNear ? 'NEAR' : 'USN'} = ${rate}`}
             />
             <SwapInfoItem
-                leftText={'Expected price'}
-                rightText={`${sliceAmount} ${token} = ${expectedAmount} ${symbol}`}
+                leftText={"Expected price"}
+                rightText={`${sliceAmount} ${symbols.from} = ${expectedAmount} ${symbols.to}`}
             />
             <SwapInfoItem
-                // isDots={isLoading}
-                leftText={'Trading fee'}
+                leftText={"Trading fee"}
                 rightText={formatAmount({
                     amount,
-                    symbol,
+                    symbol: symbols.to,
                     tradingFee,
                     value: `${feePercent}% / ${tradingFee}`,
                 })}
             />
             <SwapInfoItem
                 // isDots={isLoading}
-                leftText={'Minimum received'}
+                leftText={"Minimum received"}
                 // rightText={formatAmount({
                 //     amount,
                 //     symbol,
                 //     tradingFee,
                 //     value: MinimumReceived({ token: symbol, balance: amount, exchangeRate }) - tradingFee,
                 // })}
-                rightText={amount ? `${min} ${symbol}` : `0 ${symbol}`}
+                rightText={amount ? `${min} ${symbols.to}` : `0 ${symbols.to}`}
             />
         </StyledContainer>
     );

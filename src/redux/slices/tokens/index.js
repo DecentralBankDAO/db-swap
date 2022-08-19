@@ -12,6 +12,7 @@ import createParameterSelector from '../createParameterSelector';
 const { REACT_APP_NEAR_ENV } = process.env;
 const currentContractName = REACT_APP_NEAR_ENV === 'testnet' ? 'usdn.testnet': 'usn';
 const usdtContractName = REACT_APP_NEAR_ENV === 'testnet' ? 'usdt.fakes.testnet' : 'dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near';
+const usdcContractName = REACT_APP_NEAR_ENV === 'testnet' ? 'usdc.fakes.testnet' : 'a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near';
 
 const SLICE_NAME = 'tokens';
 
@@ -69,7 +70,7 @@ const fetchTokens = createAsyncThunk(
     async ({ accountId }, thunkAPI) => {
         const { dispatch, getState } = thunkAPI;
 
-        const likelyContracts = [`${currentContractName}`, `${usdtContractName}`]
+        const likelyContracts = [currentContractName, usdtContractName, usdcContractName]
 
         await Promise.all(
             likelyContracts.map(async (contractName) => {
@@ -235,7 +236,7 @@ export const selectTokensWithMetadataForAccountId = createSelector(
         Object.entries(ownedTokensForAccount)
             .filter(([contractName, { balance }]) => {
                 // We need to see our contract even with zero balance
-                if (contractName === currentContractName || contractName === usdtContractName) {
+                if (contractName === currentContractName || contractName === usdtContractName || contractName === usdcContractName) {
                      return true;
                 }
                 return !new BN(balance).isZero();

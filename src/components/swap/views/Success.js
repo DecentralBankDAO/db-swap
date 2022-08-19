@@ -8,7 +8,7 @@ import TextInfoSuccess from '../TextInfoSuccess';
 
 const Success = ({
     inputValueFrom,
-    symbol,
+    textInfo,
     handleBackToSwap,
     onClickGoToExplorer,
     errorFromHash,
@@ -22,7 +22,7 @@ const Success = ({
             errorFromHash={errorFromHash}
             valueFrom={inputValueFrom}
             valueTo={valueTo}
-            symbol={symbol}
+            textInfo={textInfo}
         />
         <div className="buttons-bottom-buttons">
             <FormButton

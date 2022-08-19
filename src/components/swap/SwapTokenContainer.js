@@ -1,13 +1,17 @@
-import React, { useRef } from 'react';
-import styled from 'styled-components';
+import React, { useRef, useState } from "react";
+import styled from "styled-components";
 
-import TokenIcon from './TokenIcon';
-import { formatNearAmount, formatTokenAmount } from './formatToken';
-import { maxLength } from './helpers';
+import TokenIcon from "./TokenIcon";
+import { formatNearAmount, formatTokenAmount } from "./formatToken";
+import { maxLength } from "./helpers";
+import { ArrowDownGold, ArrowDownWhite } from "../../assets/svg/ArrowsDown";
+import { SelectToken } from "./SelectToken";
 
 const { REACT_APP_NEAR_ENV } = process.env;
-const EXPLORER_URL = REACT_APP_NEAR_ENV === 'testnet' ? 'https://near-contract-helper.onrender.com': 'https://helper.mainnet.near.org';
-
+const EXPLORER_URL =
+    REACT_APP_NEAR_ENV === "testnet"
+        ? "https://near-contract-helper.onrender.com"
+        : "https://helper.mainnet.near.org";
 
 const SwapContainer = styled.div`
     width: 100%;
@@ -21,7 +25,7 @@ const SwapContainer = styled.div`
         padding-right: 3px;
         height: auto;
         border: 0;
-        background-color: #FEFDEE;
+        background-color: #fefdee;
         width: 100%;
         margin-left: auto;
         font-weight: 500;
@@ -35,7 +39,7 @@ const SwapContainer = styled.div`
         padding: 0;
         height: auto;
         border: 0;
-        background-color: #FEFDEE;
+        background-color: #fefdee;
         width: fit-content;
         margin-left: auto;
         font-weight: 500;
@@ -67,7 +71,7 @@ const SwapContainer = styled.div`
         max-width: 350px;
         height: 60px;
         padding-right: 20px;
-        background-color: #FEFDEE;
+        background-color: #fefdee;
     }
     .icon {
         display: flex;
@@ -105,7 +109,11 @@ const SwapTokenContainer = ({
     fromToToken,
     value,
     setInputValues,
+    tokens,
+    onSelectToken,
+    selected,
 }) => {
+    const [hover, setHover] = useState(false);
     const inputRef = useRef(null);
     const balance = +formatTokenAmount(
         fromToToken?.balance,
@@ -114,16 +122,15 @@ const SwapTokenContainer = ({
     );
 
     const error = balance < +value;
-    
 
     // const onFocus = () => {
     //     if (USDT) {
     //         inputRef.current.focus();
     //     }
     // };
-    
+
     return (
-        <SwapContainer className={error ? 'error' : ''}>
+        <SwapContainer className={error ? "error" : ""}>
             <div className="symbolFlex">
                 <div className="symbolContainer">
                     <div className="icon">
@@ -154,21 +161,40 @@ const SwapTokenContainer = ({
                             </span>
                         )}
                     </div>
+                    {/* {selected && (
+                        <SelectToken
+                            token={fromToToken}
+                            onSelectToken={onSelectToken}
+                            tokens={tokens}
+                            arrowTrigger={
+                                <div
+                                    className="ml-[2px] p-[5px] cursor-pointer rounded-full hover:bg-black bg-opacity-30"
+                                    onMouseEnter={() => setHover(true)}
+                                    onMouseLeave={() => setHover(false)}
+                                >
+                                    {!hover ? (
+                                        <ArrowDownWhite />
+                                    ) : (
+                                        <ArrowDownGold />
+                                    )}
+                                </div>
+                            }
+                        />
+                    )} */}
                 </div>
                 <div className="inputContainer">
-                
                     <input
                         type="text"
-                        inputMode='decimal'
-                        autoComplete='off'
-                        name={USDT ? 'FROM' : 'TO'}
-                        data-token={fromToToken?.onChainFTMetadata?.symbol === 'USDT' ? 'USDT' : 'USN'}
+                        inputMode="decimal"
+                        autoComplete="off"
+                        name={USDT ? "FROM" : "TO"}
+                        data-token={fromToToken?.onChainFTMetadata?.symbol}
                         // maxLength={maxLength(value, fromToToken?.onChainFTMetadata?.symbol)}
                         autoFocus={USDT}
-                        placeholder='0'
-                        value={value.replace(',', '.')}
+                        placeholder="0"
+                        value={value.replace(",", ".")}
                         onChange={(e) => setInputValues(e)}
-                        className={USDT && error ? 'inputError' : ''}
+                        className={USDT && error ? "inputError" : ""}
                     />
                 </div>
             </div>

@@ -1,11 +1,14 @@
-import React, { useCallback, useState } from 'react';
-import styled from 'styled-components'
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useEffect, useState } from "react";
+import styled from "styled-components";
+import { useDispatch } from "react-redux";
 
-import { fetchMultiplier, fetchMultiplierTWAP } from '../../../redux/slices/multiplier';
-import FormButton from '../common/FormButton';
-import SwapIconTwoArrows from '../../../assets/svg/SwapIconTwoArrows';
-import AvailableToSwap from '../AvailableToSwap';
+import {
+    fetchMultiplier,
+    fetchMultiplierTWAP,
+} from "../../../redux/slices/multiplier";
+import FormButton from "../common/FormButton";
+import SwapIconTwoArrows from "../../../assets/svg/SwapIconTwoArrows";
+import AvailableToSwap from "../AvailableToSwap";
 import {
     formatNearAmount,
     formatTokenAmount,
@@ -13,149 +16,238 @@ import {
     multiplyNumbers,
     subsctractNumbers,
     plusNumbers,
-    parseTokenAmount
-} from '../formatToken';
-import { commission, replacedValue } from '../helpers';
-import Loader from '../Loader';
-import SwapInfoContainer from '../SwapInfoContainer';
-import SwapTokenContainer from '../SwapTokenContainer';
-import { useFetchByorSellUSN } from '../../../hooks/fetchByorSellUSN';
-import { useNearWallet } from 'react-near';
-import { usePredict } from '../../../hooks/usePredict';
+    parseTokenAmount,
+} from "../formatToken";
+import { commission, currentToken, replacedValue } from "../helpers";
+import Loader from "../Loader";
+import SwapInfoContainer from "../SwapInfoContainer";
+import SwapTokenContainer from "../SwapTokenContainer";
+import { useFetchByorSellUSN } from "../../../hooks/fetchByorSellUSN";
+import { useNearWallet } from "react-near";
+import { usePredict } from "../../../hooks/usePredict";
+import { TokensList } from "../TokensList";
 
 const { REACT_APP_NEAR_ENV } = process.env;
-const contractId  = REACT_APP_NEAR_ENV === 'testnet' ? 'usdn.testnet' : 'usn'
+const contractId = REACT_APP_NEAR_ENV === "testnet" ? "usdn.testnet" : "usn";
 
 const StyledWrapper = styled.div`
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: space-between;
-`
+`;
 
 const balanceForError = (from) => {
-    return from?.onChainFTMetadata?.symbol === 'NEAR'
+    return from?.onChainFTMetadata?.symbol === "NEAR"
         ? +formatNearAmount(from?.balance)
-        : +formatTokenAmount(from?.balance, from?.onChainFTMetadata?.decimals, 5);
+        : +formatTokenAmount(
+              from?.balance,
+              from?.onChainFTMetadata?.decimals,
+              5
+          );
 };
 
 const SwapPage = ({
-  from,
-  to,
-  multiplier,
-  accountId,
-  onSwap,
-  setActiveView,
-  setErrorFromHash,
-  multipliers
+    multiplier,
+    accountId,
+    setActiveView,
+    setErrorFromHash,
+    multipliers,
+    fungibleTokensList,
 }) => {
     const wallet = useNearWallet();
-    const [isSwapped, setIsSwapped] = useState(false);
-    const [slippageValue, setSlippageValue] = useState('1');
-    const [fullAmount, setFullAmount] = useState('');
+    const [from, setFrom] = useState({
+        onChainFTMetadata: { symbol: "USDT" },
+        balance: "0",
+    });
+    const [to, setTo] = useState({
+        onChainFTMetadata: { symbol: "USN" },
+        balance: "0",
+    });
+    const [fullAmount, setFullAmount] = useState("");
     const [inputValues, setInputValues] = useState({
-        fromAmount: '',
-        toAmount: ''
+        fromAmount: "",
+        toAmount: "",
     });
-    const { commissionFee, isLoadingCommission } = commission({
-        accountId: wallet.account(),
-        amount: inputValues.fromAmount,
-        delay: 500,
-        exchangeRate: + multiplier,
-        token: from,
-        isSwapped,
-    });
+    // const { commissionFee, isLoadingCommission } = commission({
+    //     accountId: wallet.account(),
+    //     amount: inputValues.fromAmount,
+    //     delay: 500,
+    //     exchangeRate: + multiplier,
+    //     token: from,
+    //     isSwapped,
+    // });
     const inputAmount = inputValues.fromAmount || 0;
     const tradingFee = divNumbers(multiplyNumbers(inputAmount, 1), 10000);
     const minReceivedAmount = subsctractNumbers(inputAmount, tradingFee);
-    const { fetchByOrSell, isLoading, setIsLoading } = useFetchByorSellUSN(wallet.account());
-    const predict = usePredict(wallet.account(), inputValues.fromAmount ? inputValues.fromAmount : '1', multipliers, from?.onChainFTMetadata?.symbol, accountId)
+    const { fetchByOrSell, isLoading, setIsLoading } = useFetchByorSellUSN(
+        wallet.account()
+    );
+    // const predict = usePredict(
+    //     wallet.account(),
+    //     inputValues.fromAmount ? inputValues.fromAmount : "1",
+    //     multipliers,
+    //     from?.onChainFTMetadata?.symbol,
+    //     accountId
+    // );
     const balance = balanceForError(from);
-    const error = balance < +inputValues.fromAmount || !inputValues.fromAmount || inputValues.fromAmount == 0;
-    const slippageError = slippageValue < 0.01 || slippageValue > 99.99;
+    const error =
+        balance < +inputValues.fromAmount ||
+        !inputValues.fromAmount ||
+        inputValues.fromAmount == 0;
     // const currentMultiplier = predict?.rate * 10000
-    const dispatch = useDispatch()
-    const onHandleSwapTokens = useCallback(async (accountId, multiplier, slippageValue, inputValueFrom, symbol, fullAmount) => {
-        try {
-            setIsLoading(true);
-            await fetchByOrSell(accountId, inputValueFrom, symbol, fullAmount, wallet);
-            // setActiveView('success');
-        } catch (e) {
-            setErrorFromHash(e.message);
-            // setActiveView('success');
-            // dispatch(showCustomAlert({
-            //     errorMessage: e.message,
-            //     success: false,
-            //     messageCodeHeader: 'error',
-            // }));
-        } finally {
-            setIsLoading(false);
-            // dispatch(checkAndHideLedgerModal());
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (accountId) {
+            setFrom(
+                currentToken(
+                    fungibleTokensList,
+                    from?.onChainFTMetadata?.symbol || "USDT"
+                )
+            );
+            setTo(
+                currentToken(
+                    fungibleTokensList,
+                    to?.onChainFTMetadata?.symbol || "USN"
+                )
+            );
         }
-    }, []);
+    }, [fungibleTokensList]);
+
+    const onHandleSwapTokens = useCallback(
+        async (from, to, accountId, inputValueFrom, symbol, fullAmount) => {
+            try {
+                setIsLoading(true);
+                await fetchByOrSell(
+                    from,
+                    to,
+                    accountId,
+                    inputValueFrom,
+                    symbol,
+                    fullAmount,
+                    wallet
+                );
+                // setActiveView('success');
+            } catch (e) {
+                setErrorFromHash(e.message);
+                // setActiveView('success');
+                // dispatch(showCustomAlert({
+                //     errorMessage: e.message,
+                //     success: false,
+                //     messageCodeHeader: 'error',
+                // }));
+            } finally {
+                setIsLoading(false);
+                // dispatch(checkAndHideLedgerModal());
+            }
+        },
+        []
+    );
 
     const signIn = () => {
-        wallet.requestSignIn({
-            contractId: contractId
-        })
-        .catch(console.error);
-    }
+        wallet
+            .requestSignIn({
+                contractId: contractId,
+            })
+            .catch(console.error);
+    };
 
     const handleChange = (e) => {
         const { value } = e.target;
-        const isUSDT = from?.onChainFTMetadata?.symbol === 'USDT'
+        // const isUSDT = from?.onChainFTMetadata?.symbol === "USDT";
         const replaceValue = replacedValue(e.target.dataset.token, value);
 
-        if(e.target.name === 'FROM') {
+        if (e.target.name === "FROM") {
             setInputValues({
-                fromAmount: value ? replaceValue : '',
-                toAmount: parseFloat(subsctractNumbers(value ? replaceValue : 0, divNumbers(multiplyNumbers(value ? replaceValue : 0, 1), 10000))).toString()
+                fromAmount: value ? replaceValue : "",
+                toAmount: parseFloat(
+                    subsctractNumbers(
+                        value ? replaceValue : 0,
+                        divNumbers(
+                            multiplyNumbers(value ? replaceValue : 0, 1),
+                            10000
+                        )
+                    )
+                ).toString(),
             });
         } else {
-            const withPercent = plusNumbers(value ? replaceValue : 0, divNumbers(multiplyNumbers(value ? replaceValue : 0, 1), 10000));
-            const currentAmount = plusNumbers(value ? replaceValue : 0, divNumbers(multiplyNumbers(withPercent, 1), 10000));
+            const withPercent = plusNumbers(
+                value ? replaceValue : 0,
+                divNumbers(multiplyNumbers(value ? replaceValue : 0, 1), 10000)
+            );
+            const currentAmount = plusNumbers(
+                value ? replaceValue : 0,
+                divNumbers(multiplyNumbers(withPercent, 1), 10000)
+            );
             setInputValues({
-                fromAmount: parseFloat(Number(currentAmount).toFixed(isUSDT ? 6 : 18)).toString(),
-                toAmount: value ? replaceValue : ''
-            }); 
+                fromAmount: parseFloat(
+                    Number(currentAmount).toFixed(6)
+                ).toString(),
+                toAmount: value ? replaceValue : "",
+            });
         }
-        
     };
 
     return (
         <>
-            <div className='wrap'>
-               <Loader onRefreshMultiplier={() => {
-                    dispatch(fetchMultiplier());
-                    dispatch(fetchMultiplierTWAP());
-               }}/>
-            </div>
+            {/* <div className="wrap">
+                <Loader
+                    onRefreshMultiplier={() => {
+                        dispatch(fetchMultiplier());
+                        dispatch(fetchMultiplierTWAP());
+                    }}
+                />
+            </div> */}
+            <TokensList 
+                tokens={fungibleTokensList} 
+                selectedTokenFrom={from?.onChainFTMetadata?.symbol} 
+                selectedTokenTo={to?.onChainFTMetadata?.symbol} 
+                onSelectToken={(token) => {
+                    if(from?.onChainFTMetadata?.symbol === "USN") {
+                        setTo(token)
+                    } else {
+                        setFrom(token)
+                    }
+                }}/>
             <StyledWrapper>
                 <SwapTokenContainer
-                fromToToken={from}
-                USDT={true}
-                value={inputValues.fromAmount}
-                setInputValues={handleChange}
-            />
+                    selected={from?.onChainFTMetadata?.symbol !== "USN"}
+                    tokens={fungibleTokensList}
+                    fromToToken={from}
+                    USDT={true}
+                    value={inputValues.fromAmount}
+                    setInputValues={handleChange}
+                    onSelectToken={(token) => setFrom(token)}
+                />
                 <AvailableToSwap
                     isUSN={false}
                     onClick={(balance) => {
-                        console.log('balance', balance);
-                        setInputValues({fromAmount: balance, toAmount: parseFloat(subsctractNumbers(balance, divNumbers(multiplyNumbers(balance, 1), 10000))).toString()});
+                        console.log("balance", balance);
+                        setInputValues({
+                            fromAmount: balance,
+                            toAmount: parseFloat(
+                                subsctractNumbers(
+                                    balance,
+                                    divNumbers(
+                                        multiplyNumbers(balance, 1),
+                                        10000
+                                    )
+                                )
+                            ).toString(),
+                        });
                         setFullAmount(from?.balance);
                     }}
                     balance={from?.balance}
                     symbol={from?.onChainFTMetadata?.symbol}
                     decimals={from?.onChainFTMetadata?.decimals}
                 />
-                <div
-                    className="iconSwapContainer"
-                >
+                <div className="iconSwapContainer">
                     <div
                         className="iconSwap"
                         onClick={() => {
-                            onSwap();
-                            setIsSwapped((prev) => !prev);
+                            setFrom(to);
+                            setTo(from);
                         }}
                     >
                         <SwapIconTwoArrows
@@ -164,9 +256,12 @@ const SwapPage = ({
                             color="#FFF"
                         />
                     </div>
-                    <div className="iconSwapDivider"/>
+                    <div className="iconSwapDivider" />
                 </div>
                 <SwapTokenContainer
+                    selected={to?.onChainFTMetadata?.symbol !== "USN"}
+                    onSelectToken={(token) => setTo(token)}
+                    tokens={fungibleTokensList}
                     fromToToken={to}
                     setInputValues={handleChange}
                     multiplier={multiplier}
@@ -185,30 +280,38 @@ const SwapPage = ({
                 />
             </StyledWrapper>
             <SwapInfoContainer
-                slippageError={slippageError}
-                slippageValue={slippageValue}
-                setSlippageValue={setSlippageValue}
-                token={from?.onChainFTMetadata?.symbol}
                 amount={inputValues.fromAmount}
+                symbols={{
+                    from: from?.onChainFTMetadata?.symbol,
+                    to: to?.onChainFTMetadata?.symbol
+                }}
                 // tradingFee={commissionFee?.result}
                 // expected={inputValueFrom? predict?.sum : '0'}
                 // rate={predict?.rate}
                 min={inputValues.toAmount}
                 tradingFee={tradingFee}
-                isLoading={isLoadingCommission}
             />
             <div className="buttons-bottom-buttons">
                 <FormButton
                     type="submit"
-                    color='dark-gold'
-                    disabled={!accountId ? false : error || slippageError || isLoading}
+                    color="dark-gold"
+                    disabled={!accountId ? false : error || isLoading}
                     data-test-id="sendMoneyPageSubmitAmountButton"
-                    onClick={() => accountId
-                        ? onHandleSwapTokens(accountId, predict.rateFull, slippageValue, inputValues.fromAmount, from?.onChainFTMetadata?.symbol, fullAmount)
-                        : signIn()}
+                    onClick={() =>
+                        accountId
+                            ? onHandleSwapTokens(
+                                  from,
+                                  to,
+                                  accountId,
+                                  inputValues.fromAmount,
+                                  from?.onChainFTMetadata?.symbol,
+                                  fullAmount
+                              )
+                            : signIn()
+                    }
                     sending={isLoading}
                 >
-                  {accountId ? <>Continue</> : <>Connect to Wallet</>}
+                    {accountId ? <>Continue</> : <>Connect to Wallet</>}
                 </FormButton>
                 {/* <FormButton
                     type="button"

@@ -11,6 +11,8 @@ const { REACT_APP_NEAR_ENV } = process.env;
 const IS_MAINNET = REACT_APP_NEAR_ENV === 'mainnet' ? true : false;
 const usnContractName = !IS_MAINNET ? 'usdn.testnet' : 'usn';
 const usdtContractName = !IS_MAINNET ? 'usdt.fakes.testnet' : 'dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near';
+const usdcContractName = !IS_MAINNET ? 'usdc.fakes.testnet' : 'a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near';
+
 
 const ONE_YOCTO_NEAR = '1';
 const GAS_TO_CALL_WITHDRAW = '';
@@ -95,6 +97,7 @@ export const executeMultipleTransactions = async (
 const setArgsUSNContractWithdraw = (amount, fullAmount) => {
     return {
         args: {
+            asset_id: usdcContractName,
             amount: amount === formatTokenAmount(fullAmount, 18, 5).toString() ? fullAmount : parseTokenAmount(amount, 18),
         },
         amount: ONE_YOCTO_NEAR,
@@ -114,83 +117,144 @@ const setArgsUSDTContractTransfer = (amount, fullAmount) => {
     };
 };
 
+export const ftViewFunc = async (
+  tokenId,
+  methodName,
+  args, 
+  wallet
+  ) => {
+    return wallet.account().viewFunction(tokenId, methodName, args).catch(() => '0');
+  };
+
 export const useFetchByorSellUSN = (account) => {
     const [isLoading, setIsLoading] = useState(false);
-    const usnMethods = {
-        viewMethods: ['version', 'name', 'symbol', 'decimals', 'ft_balance_of'],
-        changeMethods: ['withdraw'],
-    };
+    // const usnMethods = {
+    //     viewMethods: ['version', 'name', 'symbol', 'decimals', 'ft_balance_of'],
+    //     changeMethods: ['withdraw'],
+    // };
 
-    const usdtMethods = {
-        viewMethods: ['storage_balance_of', 'storage_balance_bounds'],
-        changeMethods: ['ft_transfer_call', 'storage_deposit'],
-    };
+    // const usdtMethods = {
+    //     viewMethods: ['storage_balance_of', 'storage_balance_bounds'],
+    //     changeMethods: ['ft_transfer_call', 'storage_deposit'],
+    // };
 
     const fetchByOrSell = async (
+        tokenIn,
+        tokenOut,
         accountId,
         amount,
         symbol,
         fullAmount,
         wallet
     ) => {
-        const usdtContract = new nearApiJs.Contract(
-            account,
-            usdtContractName,
-            usdtMethods
-        );
+        // const usdtContract = new nearApiJs.Contract(
+        //     account,
+        //     usdtContractName,
+        //     usdtMethods
+        // );
         const transactions = [];
         const tokenInActions = [];
         const tokenOutActions = [];
+        
+        const registerToken = async (token) => {
+          const tokenRegistered = await ftViewFunc(token.contractName, 'storage_balance_of', { account_id: accountId }, wallet).catch(() => {
+            throw new Error(`${token.contractName} doesn't exist.`);
+          });
+          
+          const bounds = await ftViewFunc(token.contractName, 'storage_balance_bounds', {}, wallet)
 
-        if (symbol === 'USDT') {
-           return await usdtContract.ft_transfer_call(setArgsUSDTContractTransfer(amount, fullAmount));
-        } else {
-            const usnContract = new nearApiJs.Contract(
-                account,
-                usnContractName,
-                usnMethods
-            );
-            // const bounds = await usdtContract.storage_balance_bounds()
-            const storage = await usdtContract.storage_balance_of({"account_id": accountId});
-            if(!storage) {
-                const bounds = await usdtContract.storage_balance_bounds();
-                tokenOutActions.push({
-                    methodName: 'storage_deposit',
-                    args: {
-                      // registration_only: true,
-                      account_id: accountId,
-                    },
-                    gas: '30000000000000',
-                    amount: bounds.min,
-                  });
-            
-                  transactions.push({
-                    receiverId: usdtContractName,
-                    functionCalls: tokenOutActions,
-                  });
+          if (tokenRegistered === null) {
+            tokenOutActions.push({
+              methodName: 'storage_deposit',
+              args: {
+                registration_only: true,
+                account_id: accountId,
+              },
+              gas: '30000000000000',
+              amount: bounds.min,
+            });
+      
+            transactions.push({
+              receiverId: token.contractName,
+              functionCalls: tokenOutActions,
+            });
+          }
+        }
 
-                  tokenInActions.push({
-                    methodName: 'withdraw',
-                    args: {
-                        amount: amount === formatTokenAmount(fullAmount, 18, 5).toString() ? fullAmount : parseTokenAmount(amount, 18)
-                    },
-                    amount: ONE_YOCTO_NEAR,
-                    gas: GAS_FOR_CALL,
-                    // deposit: '1',
-                  });
+        await registerToken(tokenOut);
+
+        const fromUSN = tokenIn?.onChainFTMetadata?.symbol === 'USN'
+
+        tokenInActions.push({
+          methodName: fromUSN ? 'withdraw' : 'ft_transfer_call',
+          args: fromUSN ? {
+            asset_id: tokenOut.contractName,
+            amount: amount === formatTokenAmount(fullAmount, 18, 5).toString() ? fullAmount : parseTokenAmount(amount, 18),
+          } : {
+            receiver_id: usnContractName,
+            amount: amount === formatTokenAmount(fullAmount, 6, 5).toString() ? fullAmount : parseTokenAmount(amount, 6),
+            msg: '',
+          },
+          amount: ONE_YOCTO_NEAR,
+          gas: GAS_FOR_CALL,
+          // deposit: '1',
+        });
+  
+        transactions.push({
+          receiverId: tokenIn.contractName,
+          functionCalls: tokenInActions,
+        });
+
+        return executeMultipleTransactions(accountId, wallet, transactions)
+        // if (symbol === 'USDT') {
+        //    return await usdtContract.ft_transfer_call(setArgsUSDTContractTransfer(amount, fullAmount));
+        // } else {
+        //     const usnContract = new nearApiJs.Contract(
+        //         account,
+        //         usnContractName,
+        //         usnMethods
+        //     );
+        //     // const bounds = await usdtContract.storage_balance_bounds()
+        //     const storage = await usdtContract.storage_balance_of({"account_id": accountId});
+        //     if(!storage) {
+        //         const bounds = await usdtContract.storage_balance_bounds();
+        //         tokenOutActions.push({
+        //             methodName: 'storage_deposit',
+        //             args: {
+        //               // registration_only: true,
+        //               account_id: accountId,
+        //             },
+        //             gas: '30000000000000',
+        //             amount: bounds.min,
+        //           });
             
-                  transactions.push({
-                    receiverId: usnContractName,
-                    functionCalls: tokenInActions,
-                  });
+        //           transactions.push({
+        //             receiverId: usdtContractName,
+        //             functionCalls: tokenOutActions,
+        //           });
+
+        //           tokenInActions.push({
+        //             methodName: 'withdraw',
+        //             args: {
+        //                 amount: amount === formatTokenAmount(fullAmount, 18, 5).toString() ? fullAmount : parseTokenAmount(amount, 18)
+        //             },
+        //             amount: ONE_YOCTO_NEAR,
+        //             gas: GAS_FOR_CALL,
+        //             // deposit: '1',
+        //           });
+            
+        //           transactions.push({
+        //             receiverId: usnContractName,
+        //             functionCalls: tokenInActions,
+        //           });
                   
 
-                  return executeMultipleTransactions(accountId, wallet, transactions)
+        //           return executeMultipleTransactions(accountId, wallet, transactions)
 
-            } else {
-                return await usnContract.withdraw(setArgsUSNContractWithdraw(amount, fullAmount));
-            }
-        }
+        //     } else {
+        //         return await usnContract.withdraw(setArgsUSNContractWithdraw(amount, fullAmount));
+        //     }
+        // }
     };
 
     return { fetchByOrSell, isLoading, setIsLoading};
