@@ -34,7 +34,7 @@ function formatAmount({ amount, symbol, tradingFee, value }) {
     return `${value} ${symbol}`;
 }
 
-function SwapInfoContainer({ amount, symbols, tradingFee, min }) {
+function SwapInfoContainer({ amount, symbols, tradingFee, min, predicts, nearAndUsn }) {
     const feePercent = 0.01;
     // const isUsdt = token === "USDT";
     const expectedAmount = +amount * 1;
@@ -52,12 +52,12 @@ function SwapInfoContainer({ amount, symbols, tradingFee, min }) {
             /> */}
             <SwapInfoItem
                 leftText={"Pair price"}
-                rightText={`1 ${symbols.from} = 1 ${symbols.to}`}
+                rightText={`1 ${symbols.from} = ${nearAndUsn ? predicts.predictForOne : '1'} ${symbols.to}`}
                 // rightText={`1 ${isNear ? 'NEAR' : 'USN'} = ${rate}`}
             />
             <SwapInfoItem
                 leftText={"Expected price"}
-                rightText={`${sliceAmount} ${symbols.from} = ${expectedAmount} ${symbols.to}`}
+                rightText={`${sliceAmount} ${symbols.from} = ${nearAndUsn ? predicts.predict : expectedAmount} ${symbols.to}`}
             />
             <SwapInfoItem
                 leftText={"Trading fee"}
@@ -77,7 +77,7 @@ function SwapInfoContainer({ amount, symbols, tradingFee, min }) {
                 //     tradingFee,
                 //     value: MinimumReceived({ token: symbol, balance: amount, exchangeRate }) - tradingFee,
                 // })}
-                rightText={amount ? `${min} ${symbols.to}` : `0 ${symbols.to}`}
+                rightText={amount ? `${nearAndUsn ? predicts.predict : min} ${symbols.to}` : `0 ${symbols.to}`}
             />
         </StyledContainer>
     );

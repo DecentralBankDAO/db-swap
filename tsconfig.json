@@ -1,5 +1,6 @@
 {
     "include": [
+        "src/custom.d.ts",
         "src"
     ],
     "compilerOptions": {
@@ -16,6 +17,7 @@
         "strict": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": false,
         "module": "esnext",
         "moduleResolution": "node",
         "resolveJsonModule": true,

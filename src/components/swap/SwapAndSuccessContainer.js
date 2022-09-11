@@ -106,6 +106,10 @@ const StyledContainer = styled(Container)`
         text-align: center;
         color: #fff;
         margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100px;
         > div {
             width: 100%;
             background: #efefef;
@@ -133,6 +137,8 @@ const SwapAndSuccessContainer = ({
     fungibleTokensList,
     accountId,
     multipliers,
+    nearAndUsn = false,
+    transactionHash
 }) => {
     // const [from, setFrom] = useState({ onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
     // const [to, setTo] = useState({ onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
@@ -148,8 +154,8 @@ const SwapAndSuccessContainer = ({
     const wallet = useNearWallet();
     const dispatch = useDispatch();
     const { search } = useLocation();
-    const params = new URLSearchParams(search);
-    const transactionHash = params.get("transactionHashes") || "";
+    // const params = new URLSearchParams(search);
+    // const transactionHash = params.get("transactionHashes") || "";
     const navigate = useNavigate();
 
     const multiplier = 1;
@@ -211,7 +217,7 @@ const SwapAndSuccessContainer = ({
             }
             getHash(hash);
         }
-    }, [search, wallet]);
+    }, [transactionHash, wallet]);
 
     const onHandleBackToSwap = useCallback(async () => {
         await dispatch(fetchTokens({ accountId }));
@@ -228,6 +234,7 @@ const SwapAndSuccessContainer = ({
                     <StyledContainer className="small-centered">
                         {activeView === VIEWS_SWAP.MAIN && !transactionHash && (
                             <SwapPage
+                                nearAndUsn={nearAndUsn}
                                 fungibleTokensList={fungibleTokensList}
                                 multipliers={multipliers}
                                 setActiveView={setActiveView}
@@ -259,7 +266,7 @@ const SwapAndSuccessContainer = ({
                                 errorFromHash={errorFromHash}
                                 onClickGoToExplorer={() =>
                                     window.open(
-                                        `${explorerUrl}/transactions/${transactionHash}`,
+                                        `${explorerUrl}/transactions/${transactionHash.includes(",")? transactionHash.split(",")[1] : transactionHash}`,
                                         "_blank"
                                     )
                                 }

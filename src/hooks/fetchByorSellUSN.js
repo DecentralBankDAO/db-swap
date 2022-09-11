@@ -10,8 +10,9 @@ import SpecialWallet from '../services/SpecialWallet';
 const { REACT_APP_NEAR_ENV } = process.env;
 const IS_MAINNET = REACT_APP_NEAR_ENV === 'mainnet' ? true : false;
 const usnContractName = !IS_MAINNET ? 'usdn.testnet' : 'usn';
-const usdtContractName = !IS_MAINNET ? 'usdt.fakes.testnet' : 'dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near';
+const wNEAR = !IS_MAINNET ? 'wrap.testnet' : 'wrap.near';
 const usdcContractName = !IS_MAINNET ? 'usdc.fakes.testnet' : 'a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near';
+const REFcontract = !IS_MAINNET ? 'ref-finance-101.testnet' : 'v2.ref-finance.near';
 
 
 const ONE_YOCTO_NEAR = '1';
@@ -126,7 +127,7 @@ export const ftViewFunc = async (
     return wallet.account().viewFunction(tokenId, methodName, args).catch(() => '0');
   };
 
-export const useFetchByorSellUSN = (account) => {
+export const useFetchByorSellUSN = () => {
     const [isLoading, setIsLoading] = useState(false);
     // const usnMethods = {
     //     viewMethods: ['version', 'name', 'symbol', 'decimals', 'ft_balance_of'],
@@ -157,11 +158,12 @@ export const useFetchByorSellUSN = (account) => {
         const tokenOutActions = [];
         
         const registerToken = async (token) => {
-          const tokenRegistered = await ftViewFunc(token.contractName, 'storage_balance_of', { account_id: accountId }, wallet).catch(() => {
-            throw new Error(`${token.contractName} doesn't exist.`);
+          const storageToken = token.contractName ? token.contractName : wNEAR;
+          const tokenRegistered = await ftViewFunc(storageToken, 'storage_balance_of', { account_id: accountId }, wallet).catch(() => {
+            throw new Error(`${storageToken} doesn't exist.`);
           });
           
-          const bounds = await ftViewFunc(token.contractName, 'storage_balance_bounds', {}, wallet)
+          const bounds = await ftViewFunc(storageToken, 'storage_balance_bounds', {}, wallet)
 
           if (tokenRegistered === null) {
             tokenOutActions.push({
@@ -175,13 +177,75 @@ export const useFetchByorSellUSN = (account) => {
             });
       
             transactions.push({
-              receiverId: token.contractName,
+              receiverId: storageToken,
               functionCalls: tokenOutActions,
             });
           }
         }
 
         await registerToken(tokenOut);
+
+        if(tokenIn?.onChainFTMetadata?.symbol === 'NEAR' || tokenOut?.onChainFTMetadata?.symbol === 'NEAR') {
+          const contractIn = tokenIn.contractName ? tokenIn.contractName : wNEAR;
+          const contractOut = tokenOut.contractName ? tokenOut.contractName : wNEAR;
+          const decimalsIn =  tokenIn.onChainFTMetadata?.decimals;
+
+          const swapAmount = await ftViewFunc(REFcontract, 'get_return', {
+            pool_id: 424,
+            token_in: contractIn,
+            token_out: contractOut,
+            amount_in: amount === formatTokenAmount(fullAmount, decimalsIn, 5).toString() ? fullAmount : parseTokenAmount(amount, decimalsIn),
+            },
+            wallet
+            );
+
+            const ft_transfer_action = {
+              receiverId: contractIn,
+              functionCalls: [{ 
+                methodName: 'ft_transfer_call',
+                args: {
+                receiver_id: REFcontract,
+                amount: amount === formatTokenAmount(fullAmount, decimalsIn, 5).toString() ? fullAmount : parseTokenAmount(amount, decimalsIn),
+                msg: JSON.stringify({
+                      force: 0,
+                      actions: [{pool_id: 424, token_in: contractIn, token_out: contractOut, min_amount_out: '0'}]
+                  }),
+                },
+                  amount: ONE_YOCTO_NEAR,
+                  gas: '180000000000000',
+                }]
+              };
+
+              if(tokenOut?.onChainFTMetadata?.symbol === 'NEAR') {
+                transactions.push(ft_transfer_action, {
+                    receiverId: wNEAR,
+                    functionCalls: [{ 
+                      methodName: 'near_withdraw',
+                      args: {
+                        amount: swapAmount,
+                      },
+                      amount: ONE_YOCTO_NEAR,
+                      gas: '150000000000000',
+                  }]
+                })
+              } 
+
+              if(tokenIn?.onChainFTMetadata?.symbol === 'NEAR') {
+                transactions.push({
+                    receiverId: wNEAR,
+                    functionCalls: [{ 
+                      methodName: 'near_deposit',
+                      args: {},
+                      amount: parseTokenAmount(amount, 24),
+                      gas: '150000000000000',
+                    }]
+                  },
+                  ft_transfer_action
+                )
+              }
+            
+            return executeMultipleTransactions(accountId, wallet, transactions);
+        }
 
         const fromUSN = tokenIn?.onChainFTMetadata?.symbol === 'USN'
 

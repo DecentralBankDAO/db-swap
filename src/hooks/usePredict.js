@@ -1,9 +1,13 @@
 import * as nearApiJs from 'near-api-js';
 import { useEffect, useState } from 'react';
 import { formatTokenAmount, parseTokenAmount } from '../components/swap/formatToken';
+import { ftViewFunc } from './fetchByorSellUSN';
 
 const { REACT_APP_NEAR_ENV } = process.env;
 const IS_MAINNET = REACT_APP_NEAR_ENV === 'mainnet' ? true : false;
+const REFcontract = !IS_MAINNET ? 'ref-finance-101.testnet' : 'v2.ref-finance.near';
+const wNEAR = !IS_MAINNET ? 'wrap.testnet' : 'wrap.near';
+
 
 
 const getPredict = async (account, amount, multiplier, symbol, accountId) => {
@@ -69,22 +73,54 @@ const getPredict = async (account, amount, multiplier, symbol, accountId) => {
     }
 }
 
-export const usePredict = (account, amount, multiplier, symbol, accountId) => {
+export const usePredict = ({ tokenOut, tokenIn, amount, fullAmount, wallet}) => {
     const [predict, setPredict] = useState('');
-    
+    const [predictForOne, setPredictForOne] = useState('');
 
-    useEffect(() => {
-      let isActive = true;
-      const getPredictPrice = async () => {
-        const reseult = await getPredict(account, amount, multiplier, symbol, accountId)
-        setPredict(reseult)
+    const getPredictPrice = async (amount = '1') => {
+      const contractIn = tokenIn.contractName ? tokenIn.contractName : wNEAR;
+      const contractOut = tokenOut.contractName ? tokenOut.contractName : wNEAR;
+      const decimalsIn =  tokenIn.onChainFTMetadata?.decimals;
+      const decimalsOut = tokenOut.onChainFTMetadata?.decimals;
+      // const isInputTargetTO = target && target === 'TO';
+      // const curDecimals = isInputTargetTO ? decimalsOut : decimalsIn;
+      // console.log('isInputTargetTO', isInputTargetTO);
+      // console.log('target', target);
+      // console.log('token_in', isInputTargetTO ? contractOut : contractIn);
+      // console.log('token_out', isInputTargetTO ? contractIn : contractOut);
+      // console.log('curDecimals', curDecimals);
+
+
+
+
+      const swapAmount = await ftViewFunc(REFcontract, 'get_return', {
+        pool_id: 424,
+        token_in: contractIn,
+        token_out: contractOut,
+        amount_in: amount === formatTokenAmount(fullAmount, decimalsIn, 5).toString() ? fullAmount : parseTokenAmount(amount, decimalsIn),
+        },
+        wallet
+        );
+        // console.log('result', formatTokenAmount(swapAmount, isInputTargetTO ? decimalsIn : decimalsOut, 5));
+        return formatTokenAmount(swapAmount, decimalsOut, 5);
+    }
+    
+    useEffect(async () => {
+      if(tokenIn?.onChainFTMetadata?.symbol === 'NEAR' || tokenOut?.onChainFTMetadata?.symbol === 'NEAR') {
+        const swapAmount = await getPredictPrice('1')
+        setPredictForOne(swapAmount)
       }
 
-      getPredictPrice()
-      
-      return () => { isActive = false };
-    },[amount, symbol, multiplier])
+    },[tokenOut, tokenIn])
 
-    return predict
+    useEffect(async () => {
+      if(tokenIn?.onChainFTMetadata?.symbol === 'NEAR' || tokenOut?.onChainFTMetadata?.symbol === 'NEAR') {
+       const swapAmount = await getPredictPrice(amount)
+       setPredict(swapAmount)
+      }
+
+    },[amount, tokenOut, tokenIn])
+
+    return { predict, predictForOne}
 }
 

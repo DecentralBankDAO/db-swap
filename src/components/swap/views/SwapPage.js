@@ -26,6 +26,7 @@ import { useFetchByorSellUSN } from "../../../hooks/fetchByorSellUSN";
 import { useNearWallet } from "react-near";
 import { usePredict } from "../../../hooks/usePredict";
 import { TokensList } from "../TokensList";
+import { useValues } from "../../../hooks/useValues";
 
 const { REACT_APP_NEAR_ENV } = process.env;
 const contractId = REACT_APP_NEAR_ENV === "testnet" ? "usdn.testnet" : "usn";
@@ -54,10 +55,11 @@ const SwapPage = ({
     setErrorFromHash,
     multipliers,
     fungibleTokensList,
+    nearAndUsn
 }) => {
     const wallet = useNearWallet();
     const [from, setFrom] = useState({
-        onChainFTMetadata: { symbol: "USDT" },
+        onChainFTMetadata: { symbol: nearAndUsn ? "NEAR" : "USDT" },
         balance: "0",
     });
     const [to, setTo] = useState({
@@ -65,10 +67,7 @@ const SwapPage = ({
         balance: "0",
     });
     const [fullAmount, setFullAmount] = useState("");
-    const [inputValues, setInputValues] = useState({
-        fromAmount: "",
-        toAmount: "",
-    });
+    const { inputValues, setInputValues, handleChange} = useValues({tokenIn: from, tokenOut: to, fullAmount, wallet})
     // const { commissionFee, isLoadingCommission } = commission({
     //     accountId: wallet.account(),
     //     amount: inputValues.fromAmount,
@@ -80,36 +79,34 @@ const SwapPage = ({
     const inputAmount = inputValues.fromAmount || 0;
     const tradingFee = divNumbers(multiplyNumbers(inputAmount, 1), 10000);
     const minReceivedAmount = subsctractNumbers(inputAmount, tradingFee);
-    const { fetchByOrSell, isLoading, setIsLoading } = useFetchByorSellUSN(
-        wallet.account()
-    );
-    // const predict = usePredict(
-    //     wallet.account(),
-    //     inputValues.fromAmount ? inputValues.fromAmount : "1",
-    //     multipliers,
-    //     from?.onChainFTMetadata?.symbol,
-    //     accountId
-    // );
+    const { fetchByOrSell, isLoading, setIsLoading } = useFetchByorSellUSN();
+    const predicts = usePredict({
+        tokenIn: from, 
+        tokenOut: to, 
+        amount: inputValues.fromAmount, 
+        fullAmount, 
+        wallet,
+    });
+
     const balance = balanceForError(from);
     const error =
         balance < +inputValues.fromAmount ||
         !inputValues.fromAmount ||
         inputValues.fromAmount == 0;
     // const currentMultiplier = predict?.rate * 10000
-    const dispatch = useDispatch();
-
+    console.log('fungibleTokensList', fungibleTokensList);
     useEffect(() => {
         if (accountId) {
             setFrom(
                 currentToken(
                     fungibleTokensList,
-                    from?.onChainFTMetadata?.symbol || "USDT"
+                    nearAndUsn ? "NEAR" : "USDT"
                 )
             );
             setTo(
                 currentToken(
                     fungibleTokensList,
-                    to?.onChainFTMetadata?.symbol || "USN"
+                    "USN"
                 )
             );
         }
@@ -153,41 +150,42 @@ const SwapPage = ({
             .catch(console.error);
     };
 
-    const handleChange = (e) => {
-        const { value } = e.target;
-        // const isUSDT = from?.onChainFTMetadata?.symbol === "USDT";
-        const replaceValue = replacedValue(e.target.dataset.token, value);
+    // const handleChange = (e) => {
+    //     const { value } = e.target;
+    //     // const isUSDT = from?.onChainFTMetadata?.symbol === "USDT";
+    //     setTarget(e.target.name)
+    //     const replaceValue = replacedValue(e.target.dataset.token, value);
 
-        if (e.target.name === "FROM") {
-            setInputValues({
-                fromAmount: value ? replaceValue : "",
-                toAmount: parseFloat(
-                    subsctractNumbers(
-                        value ? replaceValue : 0,
-                        divNumbers(
-                            multiplyNumbers(value ? replaceValue : 0, 1),
-                            10000
-                        )
-                    )
-                ).toString(),
-            });
-        } else {
-            const withPercent = plusNumbers(
-                value ? replaceValue : 0,
-                divNumbers(multiplyNumbers(value ? replaceValue : 0, 1), 10000)
-            );
-            const currentAmount = plusNumbers(
-                value ? replaceValue : 0,
-                divNumbers(multiplyNumbers(withPercent, 1), 10000)
-            );
-            setInputValues({
-                fromAmount: parseFloat(
-                    Number(currentAmount).toFixed(6)
-                ).toString(),
-                toAmount: value ? replaceValue : "",
-            });
-        }
-    };
+    //     if (e.target.name === "FROM") {
+    //         setInputValues({
+    //             fromAmount: value ? replaceValue : "",
+    //             toAmount: parseFloat(
+    //                 subsctractNumbers(
+    //                     value ? replaceValue : 0,
+    //                     divNumbers(
+    //                         multiplyNumbers(value ? replaceValue : 0, 1),
+    //                         10000
+    //                     )
+    //                 )
+    //             ).toString(),
+    //         });
+    //     } else {
+    //         const withPercent = plusNumbers(
+    //             value ? replaceValue : 0,
+    //             divNumbers(multiplyNumbers(value ? replaceValue : 0, 1), 10000)
+    //         );
+    //         const currentAmount = plusNumbers(
+    //             value ? replaceValue : 0,
+    //             divNumbers(multiplyNumbers(withPercent, 1), 10000)
+    //         );
+    //         setInputValues({
+    //             fromAmount: parseFloat(
+    //                 Number(currentAmount).toFixed(6)
+    //             ).toString(),
+    //             toAmount: value ? replaceValue : "",
+    //         });
+    //     }
+    // };
 
     return (
         <>
@@ -199,17 +197,19 @@ const SwapPage = ({
                     }}
                 />
             </div> */}
-            <TokensList 
-                tokens={fungibleTokensList} 
-                selectedTokenFrom={from?.onChainFTMetadata?.symbol} 
-                selectedTokenTo={to?.onChainFTMetadata?.symbol} 
-                onSelectToken={(token) => {
-                    if(from?.onChainFTMetadata?.symbol === "USN") {
-                        setTo(token)
-                    } else {
-                        setFrom(token)
-                    }
-                }}/>
+            {!nearAndUsn &&
+                <TokensList 
+                    tokens={fungibleTokensList} 
+                    selectedTokenFrom={from?.onChainFTMetadata?.symbol} 
+                    selectedTokenTo={to?.onChainFTMetadata?.symbol} 
+                    onSelectToken={(token) => {
+                        if(from?.onChainFTMetadata?.symbol === "USN") {
+                            setTo(token)
+                        } else {
+                            setFrom(token)
+                        }
+                 }}/>
+            }
             <StyledWrapper>
                 <SwapTokenContainer
                     selected={from?.onChainFTMetadata?.symbol !== "USN"}
@@ -285,6 +285,8 @@ const SwapPage = ({
                     from: from?.onChainFTMetadata?.symbol,
                     to: to?.onChainFTMetadata?.symbol
                 }}
+                predicts={predicts}
+                nearAndUsn={nearAndUsn}
                 // tradingFee={commissionFee?.result}
                 // expected={inputValueFrom? predict?.sum : '0'}
                 // rate={predict?.rate}

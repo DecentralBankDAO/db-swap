@@ -8,12 +8,4 @@ export function bytesToHex(byteArray: number[] | Uint8Array) {
 /**
  * Hex string to bytes array
  */
-export function hexToBytes(hex: string) {
-    const bytes = [];
 
-    for (let c = 0; c < hex.length; c += 2) {
-        bytes.push(parseInt(hex.substr(c, 2), 16));
-    }
-
-    return bytes;
-}
