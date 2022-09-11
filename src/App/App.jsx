@@ -25,7 +25,7 @@ function App() {
     return (
         <WithWallet>
             <GlobalStyle />
-            <Navbar />
+            {/* <Navbar /> */}
             <Router />
             <ToastContainer />
         </WithWallet>
