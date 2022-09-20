@@ -76,7 +76,7 @@ export const isMobile = () => {
     return window.screen.width < 1024;
 };
 
-const list = ["USDT", "USDC"];
+const list = ["USDT.e", "USDC"];
 
 const SingleToken = ({ token, onClick }) => {
     return (

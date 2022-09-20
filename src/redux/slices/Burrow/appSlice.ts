@@ -18,6 +18,7 @@ export interface AppState {
     repayFromDeposits: boolean;
   };
   showModal: boolean;
+  globalAction: TokenAction;
   showInfo: boolean;
   protocolStats: boolean;
   displayAsTokenValue: boolean;
@@ -59,6 +60,7 @@ export const initialState: AppState = {
     repayFromDeposits: false,
   },
   showModal: false,
+  globalAction: "Borrow",
   showInfo: true,
   protocolStats: true,
   displayAsTokenValue: true,
@@ -74,7 +76,7 @@ export const initialState: AppState = {
   },
   selected: {
     action: undefined,
-    tokenId: "usdn.testnet",
+    tokenId: "",
     useAsCollateral: false,
     amount: 0,
     isMax: false,
@@ -136,6 +138,12 @@ export const appSlice = createSlice({
     ) {
       state.selected = { ...state.selected, isMax: false, ...action.payload };
       state.showModal = true;
+    },
+    setGlobalAction(
+      state,
+      action: PayloadAction<{ action: TokenAction; }>,
+    ) {
+      state.globalAction = action.payload.action;
     },
     updateAmount(state, action: PayloadAction<{ amount: number; isMax: boolean }>) {
       state.selected.amount = action.payload.amount;
@@ -205,6 +213,7 @@ export const appSlice = createSlice({
 export const {
   hideModal,
   showModal,
+  setGlobalAction,
   updateAmount,
   updateBorrowAmount,
   toggleUseAsCollateral,

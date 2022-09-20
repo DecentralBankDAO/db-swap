@@ -1,24 +1,33 @@
 import { useSelector } from "react-redux";
-import { getAssetData, getSelectedValues } from "../../../../redux/slices/Burrow/appSelectors";
+import { getAssetData, getGlobalAction, getSelectedValues } from "../../../../redux/slices/Burrow/appSelectors";
+import { getWithdrawMaxAmount } from "../../../../redux/slices/Burrow/Selectors/getWithdrowMaxAmount";
 import { USD_FORMAT } from "../../../../store";
 import { Available } from "./components"
 import Controls from "./Controls"
 import { SelectToken } from "./SelectToken"
+import { getModalData } from "./utils";
 
 
 const DepositAsset = () => {
+    const globalAction = useSelector(getGlobalAction);
     const asset = useSelector(getAssetData);
     const { amount } = useSelector(getSelectedValues);
 
-    const { available, supplyApy, price } = asset;
+    const { tokenId } = asset;
 
-    const available$ = (available! * price!).toLocaleString(undefined, USD_FORMAT);
+    const maxWithdrawAmount = useSelector(getWithdrawMaxAmount(tokenId));
+
+    const { apy, available, available$ } = getModalData({
+        ...asset,
+        action: globalAction === "Borrow" ? "Supply" : globalAction,
+        maxWithdrawAmount,
+        amount
+    });
 
     return (
         <>
             <Available label="Collateral assets" totalAvailable={available} available$={available$} />
-            <SelectToken apy={supplyApy} asset={asset} />
-            {/* {action === "Supply" && symbol === "USN" && <USNInfo />} */}
+            <SelectToken apy={apy} asset={asset} />
             <Controls amount={amount} available={available} />
         </>
     )

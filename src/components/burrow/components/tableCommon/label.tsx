@@ -17,10 +17,10 @@ const Label = ({ name, title }) => {
       onOpen={() => setShowTooltip(true)}
       onClose={() => setShowTooltip(false)}
     >
-      <Box>
+      <Box display="flex" flexDirection="row" alignItems="center" gap="5px">
         {name} <FcInfo onClick={handleOpenTooltip} />
       </Box>
-    </Tooltip>
+    </Tooltip >
   );
 };
 

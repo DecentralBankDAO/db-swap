@@ -73,7 +73,7 @@ const SingleTokenContainer = styled.div`
 `;
 
 
-const list = ["USDT", "USDC"];
+const list = ["USDT.e", "USDC"];
 
 const SingleToken = ({ token, onClick, active}) => {
     return (
@@ -123,7 +123,7 @@ export function TokensList({ tokens, selectedTokenFrom, selectedTokenTo, onSelec
                     active={token.onChainFTMetadata?.symbol === selectedTokenFrom || token.onChainFTMetadata?.symbol === selectedTokenTo}
                     onClick={(token) => {
                         onSelectToken(token);
-                        handleClose();
+                        // handleClose();
                     }}
                     token={token}
                     key={token?.onChainFTMetadata?.symbol}

@@ -5,16 +5,16 @@ import { useIsBurrowToken } from "../../hooks/useIsBurrowToken";
 import BRRRPrice from "../BRRRPrice";
 import TokenIcon from "../TokenIcon";
 
-const TokenCell = ({ rowData }) => {
+const TokenCell = ({ rowData, isCollateralList = false }) => {
   const isBurrowToken = useIsBurrowToken(rowData.tokenId);
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="space-between">
+    <Box display="flex" alignItems="center" justifyContent={isCollateralList ? "flex-start" : "space-between"}>
       <Box display="flex" flexDirection="row" alignItems="center">
         {rowData ? (
           <>
             <TokenIcon icon={rowData?.icon} />
-            <Box marginLeft="5px" color="gray">{rowData.symbol}</Box>
+            {!isCollateralList && <Box marginLeft="5px" color="gray">{rowData.symbol}</Box>}
           </>
         ) : (
           <Skeleton sx={{ bgcolor: "gray" }} width={35} height={35} variant="circular" />
@@ -23,7 +23,7 @@ const TokenCell = ({ rowData }) => {
       <Box px="1rem">
         {rowData ? (
           <>
-
+            {isCollateralList && <Box color="gray">{rowData.symbol}</Box>}
             {isBurrowToken && !rowData.price ? (
               <BRRRPrice />
             ) : (

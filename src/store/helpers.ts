@@ -7,7 +7,7 @@ import { AccountState } from "../redux/slices/Burrow/accountState";
 import { AppState } from "../redux/slices/Burrow/appSlice";
 import { Asset, Assets, AssetsState } from "../redux/slices/Burrow/assetState";
 import { getBurrow } from "../utils/burrow";
-import { USD_FORMAT } from "./constants";
+import { TOKEN_FORMAT, USD_FORMAT } from "./constants";
 
 const { REACT_APP_NEAR_ENV } = process.env;
 const USNcontractId = REACT_APP_NEAR_ENV === 'testnet' ? 'usdn.testnet' : 'usn'
@@ -82,6 +82,14 @@ export const expandTokenDecimal = (
   decimals: string | number,
 ): Decimal => {
   return new Decimal(value).mul(new Decimal(10).pow(decimals));
+};
+
+export const expandToken = (
+  value: string | number | Decimal,
+  decimals: string | number,
+  fixed?: number,
+): string => {
+  return expandTokenDecimal(value, decimals).toFixed(fixed);
 };
 
 export const transformAsset = (
@@ -184,3 +192,19 @@ export const getRewards = (action: "supplied" | "borrowed", asset: Asset, assets
     price: assets[tokenId].price?.usd ?? 0,
   }));
 };
+
+
+export const emptySuppliedAsset = (asset: { supplied: number; collateral: number }): boolean =>
+  !(
+    asset.supplied.toLocaleString(undefined, TOKEN_FORMAT) ===
+    (0).toLocaleString(undefined, TOKEN_FORMAT) &&
+    asset.collateral.toLocaleString(undefined, TOKEN_FORMAT) ===
+    (0).toLocaleString(undefined, TOKEN_FORMAT)
+  );
+
+export const emptyBorrowedAsset = (asset: { borrowed: number }): boolean =>
+  !(
+    asset.borrowed.toLocaleString(undefined, TOKEN_FORMAT) ===
+    (0).toLocaleString(undefined, TOKEN_FORMAT)
+  );
+

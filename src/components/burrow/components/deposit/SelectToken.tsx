@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Box } from '@mui/material';
 import { columns as defaultColumns } from "../../tabledata";
@@ -9,8 +9,10 @@ import { useAccountId } from '../../hooks/useAccountId';
 import { useAvailableAssets } from '../../hooks/useAvailableAssets';
 import { useTableSorting } from '../../hooks/useTableSorting';
 import { showModal } from '../../../../redux/slices/Burrow/appSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Table from '../Table';
+import { usePortfolioAssets } from '../../hooks/usePortfolioAssets';
+import { getGlobalAction } from '../../../../redux/slices/Burrow/appSelectors';
 
 export const isMobile = () => {
     return window.screen.width < 1024;
@@ -20,7 +22,9 @@ export const SelectToken = ({ apy, asset }) => {
     const dispatch = useDispatch()
     const [visible, setVisible] = useState(false);
     const accountId = useAccountId();
+    const globalAction = useSelector(getGlobalAction);
     const rows = useAvailableAssets("supply");
+    const [suppliedRows, borrowedRows] = usePortfolioAssets();
     const { sorting, setSorting } = useTableSorting();
 
     const columns = !accountId
@@ -83,22 +87,27 @@ export const SelectToken = ({ apy, asset }) => {
                             className="absolute text-gray-400 text-2xl right-6 cursor-pointer"
                         />
                     </div>
-                    <Table
-                        rows={rows}
-                        columns={columns}
-                        onRowClick={handleOnRowClick}
-                        sorting={{ name: "deposit", ...sorting.deposit, setSorting }}
-                    />
-                    {/* {tokensList.map((token) => (
-                        <SingleToken
-                            onClick={(token) => {
-                                onSelectToken(token);
-                                handleClose();
-                            }}
-                            token={token}
-                            key={token?.onChainFTMetadata?.symbol}
-                        />
-                    ))} */}
+                    {globalAction === "Borrow" ?
+                        <Table
+                            rows={rows}
+                            columns={columns}
+                            onRowClick={handleOnRowClick}
+                            sorting={{ name: "deposit", ...sorting.deposit, setSorting }}
+                        /> : globalAction === "Withdraw" && suppliedRows.length ?
+                            <Table
+                                rows={suppliedRows}
+                                columns={columns}
+                                onRowClick={handleOnRowClick}
+                                sx={{ maxWidth: "800px", width: "none" }}
+                                sorting={{ name: "portfolioDeposited", ...sorting.portfolioDeposited, setSorting }}
+                            /> : <Table
+                                rows={borrowedRows}
+                                columns={columns}
+                                onRowClick={handleOnRowClick}
+                                sx={{ maxWidth: "800px", width: "none" }}
+                                sorting={{ name: "portfolioBorrowed", ...sorting.portfolioBorrowed, setSorting }}
+                            />
+                    }
                 </section>
             )}
         </MicroModal>

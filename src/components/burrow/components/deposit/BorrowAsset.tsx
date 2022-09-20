@@ -1,7 +1,7 @@
 import { Box, Stack, Typography } from '@mui/material'
-import React from 'react'
+import Decimal from 'decimal.js'
 import { useSelector } from 'react-redux'
-import { getAssetDataUSN, getSelectedValues } from '../../../../redux/slices/Burrow/appSelectors'
+import { getAssetData, getAssetDataUSN, getGlobalAction, getSelectedValues } from '../../../../redux/slices/Burrow/appSelectors'
 import { getBorrowMaxAmount } from '../../../../redux/slices/Burrow/Selectors/getBorrowMaxAmount'
 import { getWithdrawMaxAmount } from '../../../../redux/slices/Burrow/Selectors/getWithdrowMaxAmount'
 import { recomputeHealthFactor } from '../../../../redux/slices/Burrow/Selectors/recomputeHealthFactor'
@@ -12,29 +12,32 @@ import { recomputeHealthFactorSupply } from '../../../../redux/slices/Burrow/Sel
 import { recomputeHealthFactorWithdraw } from '../../../../redux/slices/Burrow/Selectors/recomputeHealthFactorWithdraw'
 import { USD_FORMAT } from '../../../../store'
 import { useDegenMode } from '../../hooks/useDegenMode'
+import ActionBtn from '../ActionBtn'
 import { Alerts, Available, HealthFactor, Rates } from './components'
 import Controls from './Controls'
 import { getModalData } from './utils'
 
 const BorrowAsset = () => {
     const assetUSN = useSelector(getAssetDataUSN);
+    const asset = useSelector(getAssetData);
+    const globalAction = useSelector(getGlobalAction);
     const { borrowAmount, amount } = useSelector(getSelectedValues);
 
     const { isRepayFromDeposits } = useDegenMode();
-
-    const { action = "Supply", tokenId } = assetUSN;
+    const { tokenId: asssetTokenId } = asset;
+    const { tokenId } = assetUSN;
 
     const healthFactor = useSelector(
-        action === "Withdraw"
-            ? recomputeHealthFactorWithdraw(tokenId, borrowAmount)
-            : action === "Adjust"
+        globalAction === "Withdraw"
+            ? recomputeHealthFactorWithdraw(asssetTokenId, amount)
+            : globalAction === "Adjust"
                 ? recomputeHealthFactorAdjust(tokenId, borrowAmount)
-                : action === "Supply"
+                : globalAction === "Supply"
                     ? recomputeHealthFactorSupply(tokenId, borrowAmount)
-                    : action === "Repay" && isRepayFromDeposits
+                    : globalAction === "Repay" && isRepayFromDeposits
                         ? recomputeHealthFactorRepayFromDeposits(tokenId, borrowAmount)
-                        : action === "Repay"
-                            ? recomputeHealthFactorRepay(tokenId, borrowAmount)
+                        : globalAction === "Repay"
+                            ? recomputeHealthFactorRepay(asssetTokenId, amount)
                             : recomputeHealthFactor(tokenId, borrowAmount),
     );
 
@@ -42,24 +45,33 @@ const BorrowAsset = () => {
     const maxBorrowAmount = useSelector(getBorrowMaxAmount(tokenId));
     const maxWithdrawAmount = useSelector(getWithdrawMaxAmount(tokenId));
 
+    const currentAsset = globalAction === "Borrow" ? assetUSN : asset;
+
     const { price, available, totalTitle, rates, alerts } = getModalData({
-        ...assetUSN,
-        action: "Borrow",
+        ...currentAsset,
+        action: globalAction,
         maxBorrowAmount,
         maxWithdrawAmount,
         isRepayFromDeposits,
         healthFactor,
-        amount: borrowAmount,
+        amount: globalAction === "Borrow" ? borrowAmount : amount,
     });
 
-    const total = (price * borrowAmount).toLocaleString(undefined, USD_FORMAT);
+    const total = (price * (globalAction === "Borrow"
+        ? borrowAmount
+        : amount)).toLocaleString(undefined, USD_FORMAT);
+
     const totalAvailable = +amount + Number(available)
     const available$ = (+amount + Number(available)).toLocaleString(undefined, USD_FORMAT);
 
     return (
         <>
-            <Available label="USN to Borrow" totalAvailable={totalAvailable} available$={available$} />
-            <Controls amount={borrowAmount} available={totalAvailable} isUSN={true} />
+            {globalAction === "Borrow" &&
+                <>
+                    <Available label="USN to Borrow" totalAvailable={totalAvailable} available$={available$} />
+                    <Controls amount={borrowAmount} available={totalAvailable} isUSN={true} />
+                </>
+            }
             <Stack
                 boxShadow="0px 5px 15px rgba(0, 0, 0, 0.1)"
                 borderRadius={1}
@@ -83,6 +95,7 @@ const BorrowAsset = () => {
                 <Rates rates={rates} />
             </Stack>
             <Alerts data={alerts} />
+            <ActionBtn maxBorrowAmount={maxBorrowAmount} healthFactor={healthFactor} />
         </>
     )
 }

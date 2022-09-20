@@ -14,8 +14,8 @@ const TokenIcon = ({ symbol = "Token", icon }) => {
         // return <DefaultUsnIcon/>;
     } else if (symbol === "USN") {
         return <DefaultUsnIcon />;
-    } else if (symbol === "USDT") {
-        return <img src={USDTIcon} alt="USDT" />;
+    } else if (symbol === "USDT.e") {
+        return <img src={USDTIcon} alt="USDT.e" />;
     } else {
         return <DefaultTokenIcon />;
     }

@@ -72,9 +72,9 @@ function Table({ rows, columns, onRowClick, sorting, sx = {} }: TableProps) {
           <TableRow sx={{ padding }}>
             {columns?.map(({ dataKey, label, align, cellStyle, sortLabelStyle }) => (
               <TableCell
-                align="center"
+                align={align}
                 sx={{
-                  color: theme.palette.secondary.main,
+                  color: "#bdbdbd",
                   fontSize: 12,
                   padding,
                   ...(cellStyle || {}),
@@ -118,7 +118,7 @@ function Table({ rows, columns, onRowClick, sorting, sx = {} }: TableProps) {
                       key={dataKey}
                       align={align}
                       sx={{
-                        color: theme.palette.secondary.main,
+                        color: "#bdbdbd",
                         fontWeight: "bold",
                         padding,
                         ...(cellStyle || {}),

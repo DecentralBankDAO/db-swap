@@ -55,11 +55,11 @@ const SwapPage = ({
     setErrorFromHash,
     multipliers,
     fungibleTokensList,
-    nearAndUsn
+    nearAndUsn,
 }) => {
     const wallet = useNearWallet();
     const [from, setFrom] = useState({
-        onChainFTMetadata: { symbol: nearAndUsn ? "NEAR" : "USDT" },
+        onChainFTMetadata: { symbol: nearAndUsn ? "NEAR" : "USDT.e" },
         balance: "0",
     });
     const [to, setTo] = useState({
@@ -67,7 +67,12 @@ const SwapPage = ({
         balance: "0",
     });
     const [fullAmount, setFullAmount] = useState("");
-    const { inputValues, setInputValues, handleChange} = useValues({tokenIn: from, tokenOut: to, fullAmount, wallet})
+    const { inputValues, setInputValues, handleChange } = useValues({
+        tokenIn: from,
+        tokenOut: to,
+        fullAmount,
+        wallet,
+    });
     // const { commissionFee, isLoadingCommission } = commission({
     //     accountId: wallet.account(),
     //     amount: inputValues.fromAmount,
@@ -81,10 +86,10 @@ const SwapPage = ({
     const minReceivedAmount = subsctractNumbers(inputAmount, tradingFee);
     const { fetchByOrSell, isLoading, setIsLoading } = useFetchByorSellUSN();
     const predicts = usePredict({
-        tokenIn: from, 
-        tokenOut: to, 
-        amount: inputValues.fromAmount, 
-        fullAmount, 
+        tokenIn: from,
+        tokenOut: to,
+        amount: inputValues.fromAmount,
+        fullAmount,
         wallet,
     });
 
@@ -94,21 +99,13 @@ const SwapPage = ({
         !inputValues.fromAmount ||
         inputValues.fromAmount == 0;
     // const currentMultiplier = predict?.rate * 10000
-    console.log('fungibleTokensList', fungibleTokensList);
+    console.log("fungibleTokensList", fungibleTokensList);
     useEffect(() => {
         if (accountId) {
             setFrom(
-                currentToken(
-                    fungibleTokensList,
-                    nearAndUsn ? "NEAR" : "USDT"
-                )
+                currentToken(fungibleTokensList, nearAndUsn ? "NEAR" : "USDT.e")
             );
-            setTo(
-                currentToken(
-                    fungibleTokensList,
-                    "USN"
-                )
-            );
+            setTo(currentToken(fungibleTokensList, "USN"));
         }
     }, [fungibleTokensList]);
 
@@ -197,19 +194,20 @@ const SwapPage = ({
                     }}
                 />
             </div> */}
-            {!nearAndUsn &&
-                <TokensList 
-                    tokens={fungibleTokensList} 
-                    selectedTokenFrom={from?.onChainFTMetadata?.symbol} 
-                    selectedTokenTo={to?.onChainFTMetadata?.symbol} 
+            {!nearAndUsn && (
+                <TokensList
+                    tokens={fungibleTokensList}
+                    selectedTokenFrom={from?.onChainFTMetadata?.symbol}
+                    selectedTokenTo={to?.onChainFTMetadata?.symbol}
                     onSelectToken={(token) => {
-                        if(from?.onChainFTMetadata?.symbol === "USN") {
-                            setTo(token)
+                        if (from?.onChainFTMetadata?.symbol === "USN") {
+                            setTo(token);
                         } else {
-                            setFrom(token)
+                            setFrom(token);
                         }
-                 }}/>
-            }
+                    }}
+                />
+            )}
             <StyledWrapper>
                 <SwapTokenContainer
                     selected={from?.onChainFTMetadata?.symbol !== "USN"}
@@ -283,7 +281,7 @@ const SwapPage = ({
                 amount={inputValues.fromAmount}
                 symbols={{
                     from: from?.onChainFTMetadata?.symbol,
-                    to: to?.onChainFTMetadata?.symbol
+                    to: to?.onChainFTMetadata?.symbol,
                 }}
                 predicts={predicts}
                 nearAndUsn={nearAndUsn}

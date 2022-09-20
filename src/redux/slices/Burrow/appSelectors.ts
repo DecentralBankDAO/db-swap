@@ -1,6 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../..";
 import { transformAsset } from "../../../store";
+import { hiddenAssets } from "./config";
 
 const { REACT_APP_NEAR_ENV } = process.env;
 const USNcontractId = REACT_APP_NEAR_ENV === 'testnet' ? 'usdn.testnet' : 'usn'
@@ -35,7 +36,11 @@ export const getAssetData = createSelector(
     (state: RootState) => state.assets.data,
     (state: RootState) => state.account,
     (app, assets, account) => {
-        const asset = assets[app.selected?.tokenId];
+        const defaultTokenId = Object.keys(assets)
+            .filter((tokenId) => !hiddenAssets.includes(tokenId))[0];
+
+        const asset = assets[app.selected?.tokenId || defaultTokenId];
+
         return {
             tokenId: asset?.token_id,
             action: app.selected.action,
@@ -66,4 +71,9 @@ export const getSelectedValues = createSelector(
 export const getDegenMode = createSelector(
     (state: RootState) => state.app,
     (app) => app.degenMode,
+)
+
+export const getGlobalAction = createSelector(
+    (state: RootState) => state.app,
+    (app) => app.globalAction,
 )

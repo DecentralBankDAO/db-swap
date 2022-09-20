@@ -3,5 +3,5 @@ import { getAvailableAssets } from "../../../redux/slices/Burrow/assetsSelectors
 
 
 export function useAvailableAssets(type: "supply" | "borrow") {
-    return useSelector(getAvailableAssets(type));
-  }
+  return useSelector(getAvailableAssets(type));
+}

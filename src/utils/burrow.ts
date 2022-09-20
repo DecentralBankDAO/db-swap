@@ -2,8 +2,15 @@ import Decimal from "decimal.js";
 import { Contract } from "near-api-js";
 import { ChangeMethodsLogic, ChangeMethodsOracle, ViewMethodsLogic, ViewMethodsOracle } from "../interfaces";
 import { IConfig } from "../interfaces/burrow";
-import { LOGIC_CONTRACT_NAME } from "../redux/slices/Burrow/config";
+import { defaultNetwork, LOGIC_CONTRACT_NAME } from "../redux/slices/Burrow/config";
 import { getContract } from "../store/helpers";
+
+const nearTokenIds = {
+  mainnet: "wrap.near",
+  testnet: "wrap.testnet",
+};
+
+export const nearTokenId = nearTokenIds[defaultNetwork] || nearTokenIds.testnet;
 
 export const getBurrow = async (wallet: any) => {
 
