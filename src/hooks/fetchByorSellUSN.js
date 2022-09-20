@@ -86,7 +86,7 @@ export const executeMultipleTransactions = async (
                 actions: t.functionCalls.map(
                     ({
                         methodName,
-                        args,
+                        args = {},
                         gas = "150000000000000",
                         amount = "1",
                     }) => functionCall(methodName, args, gas, amount)
