@@ -36,12 +36,12 @@ export const NotConnected = () => (
     left="0"
     right="0"
     bottom="0"
-    bgcolor="rgba(255,255,255,0.85)"
+    bgcolor="#2a2835"
     zIndex="1"
   >
-    <Typography variant="h5" bgcolor="#fff">
+    <Box color="white" fontWeight={600}>
       Please connect your wallet
-    </Typography>
+    </Box>
   </Box>
 );
 

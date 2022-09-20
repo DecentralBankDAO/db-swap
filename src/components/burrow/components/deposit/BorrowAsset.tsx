@@ -26,6 +26,7 @@ const BorrowAsset = () => {
     const { isRepayFromDeposits } = useDegenMode();
     const { tokenId: asssetTokenId } = asset;
     const { tokenId } = assetUSN;
+    console.log('assetUSN', assetUSN);
 
     const healthFactor = useSelector(
         globalAction === "Withdraw"
@@ -45,6 +46,7 @@ const BorrowAsset = () => {
     const maxBorrowAmount = useSelector(getBorrowMaxAmount(tokenId));
     const maxWithdrawAmount = useSelector(getWithdrawMaxAmount(tokenId));
 
+
     const currentAsset = globalAction === "Borrow" ? assetUSN : asset;
 
     const { price, available, totalTitle, rates, alerts } = getModalData({
@@ -61,15 +63,15 @@ const BorrowAsset = () => {
         ? borrowAmount
         : amount)).toLocaleString(undefined, USD_FORMAT);
 
-    const totalAvailable = +amount + Number(available)
-    const available$ = (+amount + Number(available)).toLocaleString(undefined, USD_FORMAT);
-
+    // const totalAvailable = +amount + Number(available)
+    const available$ = (+amount + Number(maxBorrowAmount)).toLocaleString(undefined, USD_FORMAT);
+    // console.log('available', available);
     return (
         <>
             {globalAction === "Borrow" &&
                 <>
-                    <Available label="USN to Borrow" totalAvailable={totalAvailable} available$={available$} />
-                    <Controls amount={borrowAmount} available={totalAvailable} isUSN={true} />
+                    <Available label="USN to Borrow" totalAvailable={maxBorrowAmount} available$={available$} />
+                    <Controls amount={borrowAmount} available={maxBorrowAmount} isUSN={true} />
                 </>
             }
             <Stack

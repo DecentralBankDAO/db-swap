@@ -14,6 +14,7 @@ import { useAccountId } from "./hooks/useAccountId";
 import { DepositBlock, InfoBlock, Wrapper } from "./style/styles";
 import Preview from "./components/stats";
 import Deposit from "./components/deposit";
+import { NotConnected } from "./components/deposit/components";
 
 const Borrow = () => {
   const dispatch = useDispatch();
@@ -28,12 +29,9 @@ const Borrow = () => {
   const handleOnRowClick = ({ tokenId }) => {
     dispatch(showModal({ action: "Borrow", tokenId, amount: 0 }));
   };
-  // console.log('rows', rows);
 
   return (
     <Wrapper >
-      {!accountId && <OnboardingBRRR />}
-      {/* <NonFarmedAssets /> */}
       <InfoBlock>
         <Typography
           component="h1"
@@ -55,7 +53,8 @@ const Borrow = () => {
         </Box>
       </InfoBlock>
       <DepositBlock>
-        <Deposit />
+        {!accountId ? <NotConnected /> : <Deposit />}
+
       </DepositBlock>
 
       {/* <BetaInfo /> */}

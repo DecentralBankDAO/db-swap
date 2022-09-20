@@ -1,13 +1,13 @@
-import React, { FC } from 'react';
-import { useNearWallet } from 'react-near';
+import React, { FC } from "react";
+import { useNearWallet } from "react-near";
 
-import Router from './Router';
-import Loader from './Loader';
+import Router from "./Router";
+import Loader from "./Loader";
 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import GlobalStyle from '../styles/GlobalStyle';
-import { Navbar } from '../components/navigation/NavBar';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import GlobalStyle from "../styles/GlobalStyle";
+import { Navbar } from "../components/navigation/NavBar";
 
 function App() {
     // wait wallet for initialization
@@ -16,7 +16,7 @@ function App() {
         return <Loader />;
     }
 
-    const WithWallet= ({ children }) => {
+    const WithWallet = ({ children }) => {
         // useWhitelisted(true);
 
         return <>{children}</>;
@@ -25,7 +25,7 @@ function App() {
     return (
         <WithWallet>
             <GlobalStyle />
-            <Navbar />
+            {/* <Navbar /> */}
             <Router />
             <ToastContainer />
         </WithWallet>

@@ -55,7 +55,7 @@ export const getBurrow = async (wallet: any) => {
 
   const oracleContract: Contract = await getContract(
     account,
-    config.oracle_account_id,
+    'priceoracle.testnet',
     ViewMethodsOracle,
     ChangeMethodsOracle,
   );

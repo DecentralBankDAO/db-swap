@@ -8,6 +8,7 @@ import { AppState } from "../redux/slices/Burrow/appSlice";
 import { Asset, Assets, AssetsState } from "../redux/slices/Burrow/assetState";
 import { getBurrow } from "../utils/burrow";
 import { TOKEN_FORMAT, USD_FORMAT } from "./constants";
+import { hiddenAssetsSupplied } from "../redux/slices/Burrow/config";
 
 const { REACT_APP_NEAR_ENV } = process.env;
 const USNcontractId = REACT_APP_NEAR_ENV === 'testnet' ? 'usdn.testnet' : 'usn'
@@ -194,13 +195,13 @@ export const getRewards = (action: "supplied" | "borrowed", asset: Asset, assets
 };
 
 
-export const emptySuppliedAsset = (asset: { supplied: number; collateral: number }): boolean =>
+export const emptySuppliedAsset = (asset: { supplied: number; collateral: number, tokenId: string }): boolean =>
   !(
     asset.supplied.toLocaleString(undefined, TOKEN_FORMAT) ===
     (0).toLocaleString(undefined, TOKEN_FORMAT) &&
     asset.collateral.toLocaleString(undefined, TOKEN_FORMAT) ===
     (0).toLocaleString(undefined, TOKEN_FORMAT)
-  );
+  ) && (!hiddenAssetsSupplied.includes(asset.tokenId));
 
 export const emptyBorrowedAsset = (asset: { borrowed: number }): boolean =>
   !(

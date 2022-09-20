@@ -20,12 +20,23 @@ const CollateralAssetsList = () => {
             >
                 Assets use as Collateral
             </Box>
-            <Table
-                rows={suppliedRows}
-                columns={suppliedColumns}
-                sx={{ maxWidth: "800px", width: "none" }}
-                sorting={{ name: "portfolioDeposited", ...sorting.portfolioDeposited, setSorting }}
-            />
+            {!suppliedRows.length
+                ? <Box
+                    textAlign="center"
+                    fontWeight={400}
+                    color="#bdbdbd"
+                    my="15px"
+                >
+                    No Collateral Assets yet
+                </Box>
+                : <Table
+                    rows={suppliedRows}
+                    columns={suppliedColumns}
+                    sx={{ maxWidth: "800px", width: "none" }}
+                    sorting={{ name: "portfolioDeposited", ...sorting.portfolioDeposited, setSorting }}
+                />
+            }
+
         </>
     )
 }

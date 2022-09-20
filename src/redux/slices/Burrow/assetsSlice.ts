@@ -10,8 +10,8 @@ import { transformAssets } from "../../transform/assets";
 
 export const fetchAssets = createAsyncThunk("assets/fetchAssets", async (wallet) => {
   const assets = await getAssets(wallet).then(transformAssets);
-  const netTvlFarm = await getFarm("NetTvl", wallet);
-  return { assets, netTvlFarm };
+  // const netTvlFarm = await getFarm("NetTvl", wallet);
+  return { assets };
 });
 
 export const fetchRefPrices = createAsyncThunk("assets/fetchRefPrices", async () => {
@@ -32,7 +32,7 @@ export const assetSlice = createSlice({
     });
     builder.addCase(fetchAssets.fulfilled, (state, action) => {
       state.data = action.payload.assets;
-      state.netTvlFarm = action.payload.netTvlFarm?.rewards || {};
+      // state.netTvlFarm = action.payload.netTvlFarm?.rewards || {};
       state.status = action.meta.requestStatus;
       state.fetchedAt = new Date().toString();
     });

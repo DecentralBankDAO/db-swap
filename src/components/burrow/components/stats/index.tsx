@@ -5,6 +5,7 @@ import { getBorrowMaxAmount } from "../../../../redux/slices/Burrow/Selectors/ge
 import { getHealthFactor } from "../../../../redux/slices/Burrow/Selectors/getHelthFactor";
 import { getTotalAccountBalance } from "../../../../redux/slices/Burrow/Selectors/getTotalAccountBalance";
 import { COMPACT_USD_FORMAT, m } from "../../../../store";
+import { useAccountId } from "../../hooks/useAccountId";
 import { useFullDigits } from "../../hooks/useFullDigits";
 import CollateralAssetsList from "./collateralAssetsList";
 import Stats from "./stats";
@@ -16,6 +17,7 @@ export interface IData {
 
 const Preview = () => {
   const { fullDigits } = useFullDigits();
+  const accountId = useAccountId();
   const healthFactor = useSelector(getHealthFactor);
   const assetUSN = useSelector(getAssetDataUSN);
   const userDeposited = useSelector(getTotalAccountBalance("supplied"));
@@ -42,7 +44,7 @@ const Preview = () => {
   const maxBorrowAmount = useSelector(getBorrowMaxAmount(tokenId));
   const availableToBorrow = Math.min(Math.max(0, maxBorrowAmount), Number(availableLiquidity));
   const total = new Decimal(availableToBorrow).plus(Number(m(userBorrowed)));
-  const percentTotal = new Decimal(Number(m(userBorrowed))).div(total).mul(100);
+  const percentTotal = new Decimal(Number(m(userBorrowed))).div(total).mul(100) || 0;
 
   const data: IData[] = [
     {
@@ -59,14 +61,14 @@ const Preview = () => {
     },
     {
       text: 'Borrow power used',
-      value: `${percentTotal.toFixed(2)}%`
+      value: `${!isNaN(percentTotal.toNumber()) ? percentTotal.toFixed(2) : 0}%`
     }
   ]
 
   return (
     <>
       <Stats data={data} />
-      <CollateralAssetsList />
+      {accountId && <CollateralAssetsList />}
     </>
   )
 }

@@ -278,6 +278,7 @@ export const wNEARtransactions = async ({
         ? [
           {
             methodName: ChangeMethodsNearToken[ChangeMethodsNearToken.near_deposit],
+            args: {},
             gas: new BN("5000000000000"),
             amount: new BN(extraDeposit.toFixed(0)),
           },
@@ -307,7 +308,10 @@ export const prepareAndExecuteTransactions = async (operations: Transaction[] = 
     functionCalls: [
       {
         methodName: ChangeMethodsLogic[ChangeMethodsLogic.storage_deposit],
-        attachedDeposit: new BN(expandToken(deposit, NEAR_DECIMALS)),
+        args: {
+          account_id: account.accountId
+        },
+        amount: new BN(expandToken(deposit, NEAR_DECIMALS)),
       },
     ],
   });

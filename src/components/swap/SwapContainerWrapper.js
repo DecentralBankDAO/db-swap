@@ -93,14 +93,20 @@ const SwapContainerWrapper = ({ accountId, isLoading, geoInfo }) => {
                     <AccountInfo />
                     {burrowTab === burrowTabs.MINT ? (
                         <>
-                            {!transactionHash && (
+                            {/* {!transactionHash && (
                                 <Tabs
                                     tab={tab}
                                     setTab={setTab}
                                     tabsList={tabsList}
                                 />
-                            )}
-                            {tab === "USDT.e" ? (
+                            )} */}
+                            <SwapAndSuccessContainer
+                                transactionHash={transactionHash}
+                                fungibleTokensList={fungibleTokensList}
+                                accountId={accountId}
+                                multipliers={multipliers}
+                            />
+                            {/* {tab === "USDT.e" ? (
                                 <SwapAndSuccessContainer
                                     transactionHash={transactionHash}
                                     fungibleTokensList={fungibleTokensList}
@@ -115,7 +121,7 @@ const SwapContainerWrapper = ({ accountId, isLoading, geoInfo }) => {
                                     accountId={accountId}
                                     multipliers={multipliers}
                                 />
-                            )}
+                            )} */}
                         </>
                     ) : (
                         <Borrow />
