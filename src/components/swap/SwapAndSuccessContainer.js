@@ -131,7 +131,7 @@ const SwapAndSuccessContainer = ({
     accountId,
     multipliers,
 }) => {
-    const [from, setFrom] = useState({ onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
+    const [from, setFrom] = useState({ onChainFTMetadata: {symbol: 'USDT.e'}, balance: '0'});
     const [to, setTo] = useState({ onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
     const [activeView, setActiveView] = useState(VIEWS_SWAP.MAIN);
     const [methodFromHash, setMethodFromHash] = useState('buy')
@@ -150,7 +150,7 @@ const SwapAndSuccessContainer = ({
     useEffect(() => {
         
         if(accountId) {
-            setFrom(currentToken(fungibleTokensList, from?.onChainFTMetadata?.symbol || 'USDT'));
+            setFrom(currentToken(fungibleTokensList, from?.onChainFTMetadata?.symbol || 'USDT.e'));
             setTo(currentToken(fungibleTokensList, to?.onChainFTMetadata?.symbol || 'USN'));
         }
     }, [fungibleTokensList]);
@@ -212,13 +212,13 @@ const SwapAndSuccessContainer = ({
                     multiplier={multiplier}
                     to={to}
                     onSwap={() => {
-                        if (from?.onChainFTMetadata?.symbol === 'USDT') {
+                        if (from?.onChainFTMetadata?.symbol === 'USDT.e') {
                             setFrom(accountId 
                                 ? currentToken(fungibleTokensList, 'USN') 
                                 : { onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
-                            setTo(accountId ? fungibleTokensList[1] : { onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
+                            setTo(accountId ? fungibleTokensList[1] : { onChainFTMetadata: {symbol: 'USDT.e'}, balance: '0'});
                         } else {
-                            setFrom(accountId ? fungibleTokensList[1] : { onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
+                            setFrom(accountId ? fungibleTokensList[1] : { onChainFTMetadata: {symbol: 'USDT.e'}, balance: '0'});
                             setTo(accountId 
                                 ? currentToken(fungibleTokensList, 'USN') 
                                 : { onChainFTMetadata: {symbol: 'USN'}, balance: '0'});

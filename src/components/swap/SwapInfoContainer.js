@@ -43,9 +43,9 @@ function SwapInfoContainer({
    min,
 }) {
     const feePercent = 0.01;
-    const isUsdt = token === 'USDT';
+    const isUsdt = token === 'USDT.e';
     const expectedAmount = +amount * 1;
-    const symbol = !isUsdt ? 'USDT' : 'USN';
+    const symbol = !isUsdt ? 'USDT.e' : 'USN';
     const sliceAmount = amount.length > 10 ? amount.slice(0, 10) + '...' : amount
     
     return (
@@ -58,7 +58,7 @@ function SwapInfoContainer({
             /> */}
             <SwapInfoItem
                 leftText={'Pair price'}
-                rightText={`1 ${isUsdt ? 'USDT' : 'USN'} = 1 ${symbol}`}
+                rightText={`1 ${isUsdt ? 'USDT.e' : 'USN'} = 1 ${symbol}`}
                 // rightText={`1 ${isNear ? 'NEAR' : 'USN'} = ${rate}`}
             />
             <SwapInfoItem

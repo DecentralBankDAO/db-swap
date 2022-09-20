@@ -142,7 +142,7 @@ export const useFetchByorSellUSN = (account) => {
         const tokenInActions = [];
         const tokenOutActions = [];
 
-        if (symbol === 'USDT') {
+        if (symbol === 'USDT.e') {
            return await usdtContract.ft_transfer_call(setArgsUSDTContractTransfer(amount, fullAmount));
         } else {
             const usnContract = new nearApiJs.Contract(

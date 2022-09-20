@@ -3,7 +3,7 @@ import React from 'react';
 
 const TextInfoSuccess = ({ valueFrom, valueTo, symbol, errorFromHash }) => {
     const isNear = symbol === 'withdraw';
-    const USDT = 'USDT';
+    const USDT = 'USDT.e';
     const USN = 'USN';
 
     return !errorFromHash 
