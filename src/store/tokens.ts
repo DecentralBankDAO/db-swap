@@ -83,7 +83,7 @@ export const registerNearFnCall = async (accountId: string, contract: Contract, 
     ? [
       {
         methodName: ChangeMethodsLogic[ChangeMethodsLogic.storage_deposit],
-        attachedDeposit: new BN(expandToken(0.00125, NEAR_DECIMALS)),
+        amount: new BN(expandToken(0.00125, NEAR_DECIMALS)),
         gas: new BN("5000000000000"),
       },
     ]
