@@ -1,7 +1,7 @@
 import { BN } from "bn.js";
 import Decimal from "decimal.js";
 import getBalance from "../../api/get-balance";
-import { ChangeMethodsNearToken, ChangeMethodsToken } from "../../interfaces";
+import { ChangeMethodsOracle } from "../../interfaces";
 import { decimalMax, decimalMin, getBurrow, nearTokenId } from "../../utils/burrow";
 import { getAccountDetailed } from "../accounts";
 import { NEAR_STORAGE_DEPOSIT_DECIMAL } from "../constants";
@@ -21,8 +21,7 @@ export async function repay({
     isMax: boolean;
     wallet: any;
 }) {
-    const { account, logicContract } = await getBurrow(wallet);
-    const tokenContract = await getTokenContract(tokenId, account);
+    const { account, logicContract, oracleContract } = await getBurrow(wallet);
     const { decimals } = (await getMetadata(tokenId, wallet))!;
     const detailedAccount = (await getAccountDetailed(account.accountId, wallet))!;
     const isNEAR = tokenId === nearTokenId;
@@ -44,49 +43,31 @@ export async function repay({
 
     const maxAvailableBalance = isNEAR ? tokenBalance.add(accountBalance) : tokenBalance;
     const maxAmount = decimalMin(tokenBorrowedBalance, maxAvailableBalance);
-
-    const expandedAmountToken = isMax
-        ? maxAmount
-        : decimalMin(maxAmount, expandTokenDecimal(amount, decimals));
-
-    if (isNEAR && expandedAmountToken.gt(tokenBalance)) {
-        const toWrapAmount = expandedAmountToken.sub(tokenBalance);
-        functionCalls.push(...(await registerNearFnCall(account.accountId, tokenContract, wallet)));
-        functionCalls.push({
-            methodName: ChangeMethodsNearToken[ChangeMethodsNearToken.near_deposit],
-            gas: new BN("5000000000000"),
-            amount: new BN(toWrapAmount.toFixed(0)),
-        });
-    }
+    const expandedAmount = expandTokenDecimal(amount, decimals + extraDecimals);
 
     const msg = {
         Execute: {
             actions: [
                 {
-                    Repay: {
-                        max_amount: !isMax
-                            ? expandedAmountToken.mul(extraDecimalMultiplier).toFixed(0)
-                            : undefined,
-                        token_id: tokenId,
-                    },
+                    RepayUsn: expandedAmount.toFixed(0),
                 },
             ],
         },
     };
 
     functionCalls.push({
-        methodName: ChangeMethodsToken[ChangeMethodsToken.ft_transfer_call],
+        methodName: ChangeMethodsOracle[ChangeMethodsOracle.oracle_call],
         gas: new BN("150000000000000"),
         args: {
             receiver_id: logicContract.contractId,
-            amount: expandedAmountToken.toFixed(0),
+            amount: expandedAmount.toFixed(0),
             msg: JSON.stringify(msg),
         },
     });
 
     await prepareAndExecuteTransactions([
         {
-            receiverId: tokenContract.contractId,
+            receiverId: oracleContract.contractId,
             functionCalls,
         },
     ],

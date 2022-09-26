@@ -138,7 +138,7 @@ const SwapAndSuccessContainer = ({
     accountId,
     multipliers,
     nearAndUsn = false,
-    transactionHash
+    transactionHash,
 }) => {
     // const [from, setFrom] = useState({ onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
     // const [to, setTo] = useState({ onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
@@ -166,7 +166,7 @@ const SwapAndSuccessContainer = ({
     //         setTo(currentToken(fungibleTokensList, to?.onChainFTMetadata?.symbol || 'USN'));
     //     }
     // }, [fungibleTokensList]);
-  
+
     useEffect(() => {
         const getHash = async (hash) => {
             try {
@@ -222,7 +222,7 @@ const SwapAndSuccessContainer = ({
     const onHandleBackToSwap = useCallback(async () => {
         await dispatch(fetchTokens({ accountId }));
         await dispatch(fetchNearBalance(accountId));
-        navigate("/swap");
+        navigate("/");
         setActiveView("main");
     }, []);
     return (
@@ -266,7 +266,11 @@ const SwapAndSuccessContainer = ({
                                 errorFromHash={errorFromHash}
                                 onClickGoToExplorer={() =>
                                     window.open(
-                                        `${explorerUrl}/transactions/${transactionHash.includes(",")? transactionHash.split(",")[1] : transactionHash}`,
+                                        `${explorerUrl}/transactions/${
+                                            transactionHash.includes(",")
+                                                ? transactionHash.split(",")[1]
+                                                : transactionHash
+                                        }`,
                                         "_blank"
                                     )
                                 }

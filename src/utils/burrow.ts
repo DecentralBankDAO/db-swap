@@ -5,12 +5,20 @@ import { IConfig } from "../interfaces/burrow";
 import { defaultNetwork, LOGIC_CONTRACT_NAME } from "../redux/slices/Burrow/config";
 import { getContract } from "../store/helpers";
 
+
 const nearTokenIds = {
   mainnet: "wrap.near",
   testnet: "wrap.testnet",
 };
 
+const oracleIds = {
+  mainnet: "priceoracle.near",
+  testnet: "priceoracle.testnet"
+}
+
 export const nearTokenId = nearTokenIds[defaultNetwork] || nearTokenIds.testnet;
+
+export const oracleId = oracleIds[defaultNetwork] || oracleIds.testnet;
 
 export const getBurrow = async (wallet: any) => {
 
@@ -55,7 +63,7 @@ export const getBurrow = async (wallet: any) => {
 
   const oracleContract: Contract = await getContract(
     account,
-    'priceoracle.testnet',
+    oracleId,
     ViewMethodsOracle,
     ChangeMethodsOracle,
   );

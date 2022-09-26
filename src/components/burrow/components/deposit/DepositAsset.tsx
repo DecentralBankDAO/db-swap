@@ -24,9 +24,15 @@ const DepositAsset = () => {
         amount
     });
 
+    const label = globalAction === "Borrow"
+        ? "Collateral assets"
+        : globalAction === "Repay"
+            ? "Repay assets"
+            : "Withdrow assets"
+
     return (
         <>
-            <Available label="Collateral assets" totalAvailable={available} available$={available$} />
+            <Available label={label} totalAvailable={available} available$={available$} />
             <SelectToken apy={apy} asset={asset} />
             <Controls amount={amount} available={available} />
         </>

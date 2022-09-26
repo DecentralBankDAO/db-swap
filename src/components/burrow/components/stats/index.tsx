@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import { useSelector } from "react-redux";
-import { getAssetDataUSN } from "../../../../redux/slices/Burrow/appSelectors";
+import { getAssetData, getAssetDataUSN } from "../../../../redux/slices/Burrow/appSelectors";
 import { getBorrowMaxAmount } from "../../../../redux/slices/Burrow/Selectors/getBorrowMaxAmount";
 import { getHealthFactor } from "../../../../redux/slices/Burrow/Selectors/getHelthFactor";
 import { getTotalAccountBalance } from "../../../../redux/slices/Burrow/Selectors/getTotalAccountBalance";
@@ -20,10 +20,12 @@ const Preview = () => {
   const accountId = useAccountId();
   const healthFactor = useSelector(getHealthFactor);
   const assetUSN = useSelector(getAssetDataUSN);
+  const asset = useSelector(getAssetData)
   const userDeposited = useSelector(getTotalAccountBalance("supplied"));
   const userBorrowed = useSelector(getTotalAccountBalance("borrowed"));
 
-  const { availableLiquidity, available, tokenId } = assetUSN;
+  const { tokenId } = assetUSN;
+  const { tokenId: assetTokenId } = asset;
 
   const amountHealthFactor =
     healthFactor === -1 || healthFactor === null
@@ -41,8 +43,8 @@ const Preview = () => {
     ? userBorrowed.toLocaleString(undefined, COMPACT_USD_FORMAT)
     : `$${m(userBorrowed)}`;
 
-  const maxBorrowAmount = useSelector(getBorrowMaxAmount(tokenId));
-  const availableToBorrow = Math.min(Math.max(0, maxBorrowAmount), Number(availableLiquidity));
+  const maxBorrowAmount = useSelector(getBorrowMaxAmount(assetTokenId, tokenId));
+  const availableToBorrow = maxBorrowAmount;
   const total = new Decimal(availableToBorrow).plus(Number(m(userBorrowed)));
   const percentTotal = new Decimal(Number(m(userBorrowed))).div(total).mul(100) || 0;
 

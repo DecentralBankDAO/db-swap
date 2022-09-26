@@ -6,10 +6,27 @@ import { expandTokenDecimal, MAX_RATIO, shrinkToken } from "../../../../store";
 import { decimalMax, decimalMin } from "../../../../utils/burrow";
 import { Portfolio } from "../accountState";
 import { Assets } from "../assetState";
+import { parseTokenAmount } from "../../../../components/swap/formatToken";
 
 
 
 const sumReducerDecimal = (sum: Decimal, cur: Decimal) => sum.add(cur);
+
+export const predictByBorrow = (
+  assets: Assets,
+  amount: number | string,
+  tokenId: string
+) => {
+  const asset = assets[tokenId];
+
+  const price = asset.price
+    ? asset.price.usd
+    : 0;
+
+  const pricedBalance = new Decimal(amount).mul(price);
+
+  return pricedBalance.mul(asset.config.volatility_ratio).div(MAX_RATIO);
+}
 
 export const getAdjustedSum = (
   type: "borrowed" | "collateral",
@@ -20,9 +37,11 @@ export const getAdjustedSum = (
     .map((id) => {
       const asset = assets[id];
 
-      const price = asset.price
-        ? new Decimal(asset.price.multiplier).div(new Decimal(10).pow(asset.price.decimals))
-        : new Decimal(0);
+      const price = !asset.price && asset.token_id === "usdn.testnet"
+        ? new Decimal(10000).div(new Decimal(10).pow(22))
+        : asset.price
+          ? new Decimal(asset.price.multiplier).div(new Decimal(10).pow(asset.price.decimals))
+          : new Decimal(0);
 
       const pricedBalance = new Decimal(portfolio[type][id].balance)
         .div(expandTokenDecimal(1, asset.config.extra_decimals))

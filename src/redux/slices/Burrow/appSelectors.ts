@@ -37,7 +37,7 @@ export const getAssetData = createSelector(
     (state: RootState) => state.account,
     (app, assets, account) => {
         const defaultTokenId = Object.keys(assets)
-            .filter((tokenId) => !hiddenAssets.includes(tokenId))[0];
+            .filter((tokenId) => !hiddenAssets.includes(tokenId) && tokenId !== "usdn.testnet")[0];
 
         const asset = assets[app.selected?.tokenId || defaultTokenId];
 

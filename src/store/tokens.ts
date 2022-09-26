@@ -201,17 +201,14 @@ export const borrowTransactions = async ({
     Execute: {
       actions: [
         {
-          Borrow: {
-            token_id: borrowTokenId,
-            amount: expandedAmount.toFixed(0),
-          },
+          BorrowUsn: expandedAmount.toFixed(0)
         },
-        {
-          Withdraw: {
-            token_id: borrowTokenId,
-            max_amount: expandedAmount.toFixed(0),
-          },
-        },
+        // {
+        //   Withdraw: {
+        //     token_id: borrowTokenId,
+        //     max_amount: expandedAmount.toFixed(0),
+        //   },
+        // },
       ],
     },
   };
