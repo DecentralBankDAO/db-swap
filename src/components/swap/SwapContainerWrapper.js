@@ -83,13 +83,11 @@ const SwapContainerWrapper = ({ accountId, isLoading, geoInfo }) => {
                 <BlockedCountry />
             ) : (
                 <>
-                    {!transactionHash && (
                         <Tabs
                             tab={burrowTab}
                             setTab={setBurrowTab}
                             tabsList={burrowTabsList}
                         />
-                    )}
                     <AccountInfo />
                     {burrowTab === burrowTabs.MINT ? (
                         <>
