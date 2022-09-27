@@ -3,7 +3,7 @@ import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "../../../..";
 import { expandTokenDecimal, MAX_RATIO, shrinkToken } from "../../../../store";
-import { decimalMax, decimalMin } from "../../../../utils/burrow";
+import { decimalMax, decimalMin, usnTokenId } from "../../../../utils/burrow";
 import { Portfolio } from "../accountState";
 import { Assets } from "../assetState";
 import { parseTokenAmount } from "../../../../components/swap/formatToken";
@@ -37,7 +37,7 @@ export const getAdjustedSum = (
     .map((id) => {
       const asset = assets[id];
 
-      const price = !asset.price && asset.token_id === "usdn.testnet"
+      const price = !asset.price && asset.token_id === usnTokenId
         ? new Decimal(10000).div(new Decimal(10).pow(22))
         : asset.price
           ? new Decimal(asset.price.multiplier).div(new Decimal(10).pow(asset.price.decimals))

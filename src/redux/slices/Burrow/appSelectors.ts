@@ -1,10 +1,8 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../..";
 import { transformAsset } from "../../../store";
+import { usnTokenId } from "../../../utils/burrow";
 import { hiddenAssets } from "./config";
-
-const { REACT_APP_NEAR_ENV } = process.env;
-const USNcontractId = REACT_APP_NEAR_ENV === 'testnet' ? 'usdn.testnet' : 'usn'
 
 export const getFullDigits = createSelector(
     (state: RootState) => state.app,
@@ -37,7 +35,7 @@ export const getAssetData = createSelector(
     (state: RootState) => state.account,
     (app, assets, account) => {
         const defaultTokenId = Object.keys(assets)
-            .filter((tokenId) => !hiddenAssets.includes(tokenId) && tokenId !== "usdn.testnet")[0];
+            .filter((tokenId) => !hiddenAssets.includes(tokenId) && tokenId !== usnTokenId)[0];
 
         const asset = assets[app.selected?.tokenId || defaultTokenId];
 
@@ -54,7 +52,7 @@ export const getAssetDataUSN = createSelector(
     (state: RootState) => state.assets.data,
     (state: RootState) => state.account,
     (app, assets, account) => {
-        const asset = assets[USNcontractId];
+        const asset = assets[usnTokenId];
         return {
             tokenId: asset?.token_id,
             action: app.selected.action,

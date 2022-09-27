@@ -227,12 +227,11 @@ const SwapAndSuccessContainer = ({
     }, []);
     return (
         <>
-            {loadHash ? (
+            {/* {loadHash ? (
                 <div style={{ width: 400, height: 400 }} />
             ) : (
-                <>
+                <> */}
                     <StyledContainer className="small-centered">
-                        {activeView === VIEWS_SWAP.MAIN && !transactionHash && (
                             <SwapPage
                                 nearAndUsn={nearAndUsn}
                                 fungibleTokensList={fungibleTokensList}
@@ -240,27 +239,10 @@ const SwapAndSuccessContainer = ({
                                 setActiveView={setActiveView}
                                 setErrorFromHash={setErrorFromHash}
                                 accountId={accountId}
-                                // from={from}
                                 multiplier={multiplier}
-                                // to={to}
-                                // onSwap={() => {
-                                //     setFrom(to);
-                                //     setTo(from);
-                                //     if (from?.onChainFTMetadata?.symbol === 'USDT') {
-                                //         setFrom(accountId
-                                //             ? currentToken(fungibleTokensList, 'USN')
-                                //             : { onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
-                                //         setTo(accountId ? fungibleTokensList[1] : { onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
-                                //     } else {
-                                //         setFrom(accountId ? fungibleTokensList[1] : { onChainFTMetadata: {symbol: 'USDT'}, balance: '0'});
-                                //         setTo(accountId
-                                //             ? currentToken(fungibleTokensList, 'USN')
-                                //             : { onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
-                                //     }
-                                // }}
                             />
-                        )}
-                        {activeView === VIEWS_SWAP.SUCCESS && !loadHash && (
+                        
+                        {/* {activeView === VIEWS_SWAP.SUCCESS && !loadHash && (
                             <Success
                                 successValue={successValue}
                                 errorFromHash={errorFromHash}
@@ -281,11 +263,11 @@ const SwapAndSuccessContainer = ({
                                     await onHandleBackToSwap();
                                 }}
                             />
-                        )}
+                        )} */}
                     </StyledContainer>
                 </>
-            )}
-        </>
+            
+        // </>
     );
 };
 

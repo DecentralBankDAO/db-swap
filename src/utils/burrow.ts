@@ -16,9 +16,16 @@ const oracleIds = {
   testnet: "priceoracle.testnet"
 }
 
+const usnTokenIds = {
+  mainnet: "usn",
+  testnet: "usdn.testnet"
+}
+
 export const nearTokenId = nearTokenIds[defaultNetwork] || nearTokenIds.testnet;
 
 export const oracleId = oracleIds[defaultNetwork] || oracleIds.testnet;
+
+export const usnTokenId = usnTokenIds[defaultNetwork] || usnTokenIds.testnet
 
 export const getBurrow = async (wallet: any) => {
 
