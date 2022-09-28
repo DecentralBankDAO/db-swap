@@ -3,6 +3,7 @@ import Decimal from 'decimal.js'
 import { useSelector } from 'react-redux'
 import { getAssetData, getAssetDataUSN, getGlobalAction, getSelectedValues } from '../../../../redux/slices/Burrow/appSelectors'
 import { getBorrowMaxAmount } from '../../../../redux/slices/Burrow/Selectors/getBorrowMaxAmount'
+import { getTotalAccountBalance } from '../../../../redux/slices/Burrow/Selectors/getTotalAccountBalance'
 import { getWithdrawMaxAmount } from '../../../../redux/slices/Burrow/Selectors/getWithdrowMaxAmount'
 import { recomputeHealthFactor } from '../../../../redux/slices/Burrow/Selectors/recomputeHealthFactor'
 import { recomputeHealthFactorAdjust } from '../../../../redux/slices/Burrow/Selectors/recomputeHealthFactorAdjust'
@@ -22,6 +23,7 @@ const BorrowAsset = () => {
     const asset = useSelector(getAssetData);
     const globalAction = useSelector(getGlobalAction);
     const { borrowAmount, amount } = useSelector(getSelectedValues);
+    const userBorrowed = useSelector(getTotalAccountBalance("borrowed"));
 
     const { isRepayFromDeposits } = useDegenMode();
     const { tokenId: asssetTokenId } = asset;
@@ -60,7 +62,7 @@ const BorrowAsset = () => {
 
     const total = (price * (globalAction === "Borrow"
         ? borrowAmount
-        : amount)).toLocaleString(undefined, USD_FORMAT);
+        : amount) + userBorrowed).toLocaleString(undefined, USD_FORMAT);
 
 
     const available$ = Number(maxBorrowAmount).toLocaleString(undefined, USD_FORMAT);

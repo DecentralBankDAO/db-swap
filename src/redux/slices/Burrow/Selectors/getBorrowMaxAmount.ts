@@ -41,3 +41,17 @@ export const getBorrowMaxAmount = (collateralAssetTokenId: string, tokenId: stri
             return maxBorrowAmount.toNumber();
         },
     );
+
+export const adjustedCollateralSum = () =>
+    createSelector(
+        (state: RootState) => state.assets,
+        (state: RootState) => state.account,
+        (assets, account) => {
+            if (!account.accountId) return 0;
+            if (!hasAssets(assets)) return 0;
+
+            const adjustedCollateralSum = getAdjustedSum("collateral", account.portfolio, assets.data);
+
+            return adjustedCollateralSum.toNumber();
+        },
+    );

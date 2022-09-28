@@ -1,6 +1,4 @@
-import { createGlobalStyle } from 'styled-components';
-
-
+import { createGlobalStyle } from "styled-components";
 
 export default createGlobalStyle`
   * {
@@ -27,15 +25,6 @@ export default createGlobalStyle`
             -webkit-overflow-scrolling: touch;
         }
    }
-
-    a {
-        color: #0072ce;
-    }
-
-    a:hover {
-        color: #0072ce;
-        text-decoration: underline;
-    }
 
     .link {
         color: #0072ce;

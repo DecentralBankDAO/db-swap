@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import { useSelector } from "react-redux";
 import { getAssetData, getAssetDataUSN } from "../../../../redux/slices/Burrow/appSelectors";
-import { getBorrowMaxAmount } from "../../../../redux/slices/Burrow/Selectors/getBorrowMaxAmount";
+import { adjustedCollateralSum, getBorrowMaxAmount } from "../../../../redux/slices/Burrow/Selectors/getBorrowMaxAmount";
 import { getHealthFactor } from "../../../../redux/slices/Burrow/Selectors/getHelthFactor";
 import { getTotalAccountBalance } from "../../../../redux/slices/Burrow/Selectors/getTotalAccountBalance";
 import { COMPACT_USD_FORMAT, m } from "../../../../store";
@@ -23,7 +23,7 @@ const Preview = () => {
   const asset = useSelector(getAssetData)
   const userDeposited = useSelector(getTotalAccountBalance("supplied"));
   const userBorrowed = useSelector(getTotalAccountBalance("borrowed"));
-
+  const collateralSum = useSelector(adjustedCollateralSum())
   const { tokenId } = assetUSN;
   const { tokenId: assetTokenId } = asset;
 
@@ -55,7 +55,7 @@ const Preview = () => {
     },
     {
       text: 'Collateral Value',
-      value: userDepositedValue
+      value: `${userDepositedValue} (${collateralSum.toFixed(2)})`
     },
     {
       text: 'Borrowed',

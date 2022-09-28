@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
-
-import {
-    fetchMultiplier,
-    fetchMultiplierTWAP,
-} from "../../../redux/slices/multiplier";
 import FormButton from "../common/FormButton";
 import SwapIconTwoArrows from "../../../assets/svg/SwapIconTwoArrows";
 import AvailableToSwap from "../AvailableToSwap";
@@ -15,11 +9,8 @@ import {
     divNumbers,
     multiplyNumbers,
     subsctractNumbers,
-    plusNumbers,
-    parseTokenAmount,
 } from "../formatToken";
-import { commission, currentToken, replacedValue } from "../helpers";
-import Loader from "../Loader";
+import { currentToken } from "../helpers";
 import SwapInfoContainer from "../SwapInfoContainer";
 import SwapTokenContainer from "../SwapTokenContainer";
 import { useFetchByorSellUSN } from "../../../hooks/fetchByorSellUSN";
@@ -51,9 +42,6 @@ const balanceForError = (from) => {
 const SwapPage = ({
     multiplier,
     accountId,
-    setActiveView,
-    setErrorFromHash,
-    multipliers,
     fungibleTokensList,
     nearAndUsn,
 }) => {
@@ -73,14 +61,6 @@ const SwapPage = ({
         fullAmount,
         wallet,
     });
-    // const { commissionFee, isLoadingCommission } = commission({
-    //     accountId: wallet.account(),
-    //     amount: inputValues.fromAmount,
-    //     delay: 500,
-    //     exchangeRate: + multiplier,
-    //     token: from,
-    //     isSwapped,
-    // });
     const inputAmount = inputValues.fromAmount || 0;
     const tradingFee = divNumbers(multiplyNumbers(inputAmount, 1), 10000);
     const minReceivedAmount = subsctractNumbers(inputAmount, tradingFee);
@@ -98,8 +78,7 @@ const SwapPage = ({
         balance < +inputValues.fromAmount ||
         !inputValues.fromAmount ||
         inputValues.fromAmount == 0;
-    // const currentMultiplier = predict?.rate * 10000
-    console.log("fungibleTokensList", fungibleTokensList);
+
     useEffect(() => {
         if (accountId) {
             setFrom(
@@ -122,18 +101,10 @@ const SwapPage = ({
                     fullAmount,
                     wallet
                 );
-                // setActiveView('success');
             } catch (e) {
-                setErrorFromHash(e.message);
-                // setActiveView('success');
-                // dispatch(showCustomAlert({
-                //     errorMessage: e.message,
-                //     success: false,
-                //     messageCodeHeader: 'error',
-                // }));
+                console.error(e || e.message);
             } finally {
                 setIsLoading(false);
-                // dispatch(checkAndHideLedgerModal());
             }
         },
         []
@@ -147,53 +118,8 @@ const SwapPage = ({
             .catch(console.error);
     };
 
-    // const handleChange = (e) => {
-    //     const { value } = e.target;
-    //     // const isUSDT = from?.onChainFTMetadata?.symbol === "USDT";
-    //     setTarget(e.target.name)
-    //     const replaceValue = replacedValue(e.target.dataset.token, value);
-
-    //     if (e.target.name === "FROM") {
-    //         setInputValues({
-    //             fromAmount: value ? replaceValue : "",
-    //             toAmount: parseFloat(
-    //                 subsctractNumbers(
-    //                     value ? replaceValue : 0,
-    //                     divNumbers(
-    //                         multiplyNumbers(value ? replaceValue : 0, 1),
-    //                         10000
-    //                     )
-    //                 )
-    //             ).toString(),
-    //         });
-    //     } else {
-    //         const withPercent = plusNumbers(
-    //             value ? replaceValue : 0,
-    //             divNumbers(multiplyNumbers(value ? replaceValue : 0, 1), 10000)
-    //         );
-    //         const currentAmount = plusNumbers(
-    //             value ? replaceValue : 0,
-    //             divNumbers(multiplyNumbers(withPercent, 1), 10000)
-    //         );
-    //         setInputValues({
-    //             fromAmount: parseFloat(
-    //                 Number(currentAmount).toFixed(6)
-    //             ).toString(),
-    //             toAmount: value ? replaceValue : "",
-    //         });
-    //     }
-    // };
-
     return (
         <>
-            {/* <div className="wrap">
-                <Loader
-                    onRefreshMultiplier={() => {
-                        dispatch(fetchMultiplier());
-                        dispatch(fetchMultiplierTWAP());
-                    }}
-                />
-            </div> */}
             {!nearAndUsn && (
                 <TokensList
                     tokens={fungibleTokensList}
@@ -268,10 +194,6 @@ const SwapPage = ({
                 />
                 <AvailableToSwap
                     isUSN={true}
-                    // onClick={(balance) => {
-                    //     setInputValueFrom(balance);
-                    //     from?.onChainFTMetadata?.symbol === 'USN' && setUSNAmount(from?.balance);
-                    // }}
                     balance={to?.balance}
                     symbol={to?.onChainFTMetadata?.symbol}
                     decimals={to?.onChainFTMetadata?.decimals}
@@ -285,9 +207,6 @@ const SwapPage = ({
                 }}
                 predicts={predicts}
                 nearAndUsn={nearAndUsn}
-                // tradingFee={commissionFee?.result}
-                // expected={inputValueFrom? predict?.sum : '0'}
-                // rate={predict?.rate}
                 min={inputValues.toAmount}
                 tradingFee={tradingFee}
             />
@@ -313,14 +232,6 @@ const SwapPage = ({
                 >
                     {accountId ? <>Continue</> : <>Connect to Wallet</>}
                 </FormButton>
-                {/* <FormButton
-                    type="button"
-                    className="link"
-                    color="gray"
-                    linkTo="/"
-                >
-                    <>Cancel</>
-                </FormButton> */}
             </div>
         </>
     );

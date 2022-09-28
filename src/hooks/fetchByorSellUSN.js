@@ -2,7 +2,6 @@ import * as nearApiJs from "near-api-js";
 import { createTransaction, functionCall } from "near-api-js/lib/transaction";
 import { useState } from "react";
 import {
-    formatNearAmount,
     formatTokenAmount,
     parseTokenAmount,
 } from "../components/swap/formatToken";
@@ -21,7 +20,6 @@ const REFcontract = !IS_MAINNET
     : "v2.ref-finance.near";
 
 const ONE_YOCTO_NEAR = "1";
-const GAS_TO_CALL_WITHDRAW = "";
 const GAS_FOR_CALL = "200000000000000"; // 200 TGas
 
 async function createBatchTransaction({
@@ -102,35 +100,6 @@ export const executeMultipleTransactions = async (
     );
 };
 
-const setArgsUSNContractWithdraw = (amount, fullAmount) => {
-    return {
-        args: {
-            asset_id: usdcContractName,
-            amount:
-                amount === formatTokenAmount(fullAmount, 18, 5).toString()
-                    ? fullAmount
-                    : parseTokenAmount(amount, 18),
-        },
-        amount: ONE_YOCTO_NEAR,
-        gas: GAS_FOR_CALL,
-    };
-};
-
-const setArgsUSDTContractTransfer = (amount, fullAmount) => {
-    return {
-        args: {
-            receiver_id: usnContractName,
-            amount:
-                amount === formatTokenAmount(fullAmount, 6, 5).toString()
-                    ? fullAmount
-                    : parseTokenAmount(amount, 6),
-            msg: "",
-        },
-        amount: ONE_YOCTO_NEAR,
-        gas: GAS_FOR_CALL,
-    };
-};
-
 export const ftViewFunc = async (tokenId, methodName, args, wallet) => {
     return wallet
         .account()
@@ -140,15 +109,6 @@ export const ftViewFunc = async (tokenId, methodName, args, wallet) => {
 
 export const useFetchByorSellUSN = () => {
     const [isLoading, setIsLoading] = useState(false);
-    // const usnMethods = {
-    //     viewMethods: ['version', 'name', 'symbol', 'decimals', 'ft_balance_of'],
-    //     changeMethods: ['withdraw'],
-    // };
-
-    // const usdtMethods = {
-    //     viewMethods: ['storage_balance_of', 'storage_balance_bounds'],
-    //     changeMethods: ['ft_transfer_call', 'storage_deposit'],
-    // };
 
     const fetchByOrSell = async (
         tokenIn,
@@ -159,11 +119,6 @@ export const useFetchByorSellUSN = () => {
         fullAmount,
         wallet
     ) => {
-        // const usdtContract = new nearApiJs.Contract(
-        //     account,
-        //     usdtContractName,
-        //     usdtMethods
-        // );
         const transactions = [];
         const tokenInActions = [];
         const tokenOutActions = [];

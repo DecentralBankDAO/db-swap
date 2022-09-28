@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { NavLink } from "react-router-dom";
 import Container from "./common/Container";
 
 const TabsContainer = styled(Container)`
@@ -12,27 +13,40 @@ const TabsContainer = styled(Container)`
     border-radius: 16px;
 `;
 
-const Tab = styled.div`
+const Tab = styled(NavLink)`
     display: flex;
     justify-content: center;
     align-items: center;
     width: 50%;
     border-radius: 10px;
-    background: ${({ active }) => (active ? "#53565c" : "none")};
+    background: "none";
     text-align: center;
-    color: ${({ active }) => (active ? "#C1B582" : "gray")};
+    color: "gray";
     font-weight: 700;
     height: 100%;
     cursor: pointer;
     font-size: 18px;
     line-height: 18px;
+
+    :hover {
+        text-decoration: none;
+    }
+
+    &.active {
+        background: #53565c;
+        color: #c1b582;
+    }
 `;
 
-const Tabs = ({ tab, setTab, tabsList, tabs }) => {
+const Tabs = () => {
     return (
         <TabsContainer>
-            {tabsList.map((el) => (
-                <Tab key={el} active={tab === el} onClick={() => setTab(el)}>
+            {["MINT", "BURROW"].map((el) => (
+                <Tab
+                    key={el}
+                    className={({ isActive }) => (isActive ? "active" : "")}
+                    to={el === "MINT" ? "/" : "/burrow"}
+                >
                     {el}
                 </Tab>
             ))}
