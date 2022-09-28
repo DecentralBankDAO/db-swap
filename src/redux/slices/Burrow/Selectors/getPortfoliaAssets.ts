@@ -74,6 +74,7 @@ export const getPortfolioAssets = createSelector(
                             shrinkToken(suppliedBalance, asset.metadata.decimals + asset.config.extra_decimals),
                         ),
                     canUseAsCollateral: asset.config.can_use_as_collateral,
+                    collateralFactor: `${Number(asset.config.volatility_ratio / 100)}%`,
                     canWithdraw: asset.config.can_withdraw,
                     rewards: getPortfolioRewards(
                         "supplied",

@@ -31,4 +31,13 @@ export const suppliedColumns = [
         align: "center",
         Cell: ({ rowData }) => <Cell value={(rowData.collateral * rowData.price)} rowData={rowData} format="usd" />,
     },
+    {
+        label: <Label name="C.F." title="Collateral Factor" />,
+        dataKey: "collateralFactor",
+        sortLabelStyle: { minWidth: [70, 70, "auto"] },
+        Cell: ({ rowData }) => (
+            <Cell value={rowData?.collateralFactor} rowData={rowData} format="string" />
+        ),
+        align: "center",
+    },
 ];
