@@ -4,13 +4,15 @@ import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "../../../..";
 import { expandTokenDecimal, hasAssets, MAX_RATIO } from "../../../../store";
-import { getAdjustedSum } from "./getWithdrowMaxAmount";
+import { getAdjustedSum, predictByBorrow } from "./getWithdrowMaxAmount";
 
 
-export const recomputeHealthFactor = (tokenId: string, amount: number) =>
+export const recomputeHealthFactor = (tokenId: string, amount: number, amountCollateral: number, collateralTokenId: string) =>
     createSelector(
         (state: RootState) => state.assets,
         (state: RootState) => state.account,
+        // (state: RootState) => state.app.selected.amount,
+        // (state: RootState) => state.app.selected.tokenId,
         (assets, account) => {
             if (!hasAssets(assets)) return 0;
             if (!account.portfolio || !tokenId) return 0;
@@ -41,9 +43,10 @@ export const recomputeHealthFactor = (tokenId: string, amount: number) =>
             const portfolio = amount === 0 ? account.portfolio : clonedAccount.portfolio;
 
             const adjustedCollateralSum = getAdjustedSum("collateral", account.portfolio, assets.data);
+            const predictByCallateral = predictByBorrow(assets.data, amountCollateral, collateralTokenId)
             const adjustedBorrowedSum = getAdjustedSum("borrowed", portfolio, assets.data);
 
-            const healthFactor = adjustedCollateralSum.div(adjustedBorrowedSum).mul(100).toNumber();
+            const healthFactor = adjustedCollateralSum.add(predictByCallateral).div(adjustedBorrowedSum).mul(100).toNumber();
 
             return healthFactor < MAX_RATIO ? healthFactor : MAX_RATIO;
         },

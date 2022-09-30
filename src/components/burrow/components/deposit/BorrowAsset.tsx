@@ -40,7 +40,7 @@ const BorrowAsset = () => {
                         ? recomputeHealthFactorRepayFromDeposits(tokenId, borrowAmount)
                         : globalAction === "Repay"
                             ? recomputeHealthFactorRepay(asssetTokenId, amount)
-                            : recomputeHealthFactor(tokenId, borrowAmount),
+                            : recomputeHealthFactor(tokenId, borrowAmount, amount, asssetTokenId),
     );
 
 

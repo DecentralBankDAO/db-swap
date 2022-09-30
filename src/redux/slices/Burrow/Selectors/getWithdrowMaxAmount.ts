@@ -6,7 +6,8 @@ import { expandTokenDecimal, MAX_RATIO, shrinkToken } from "../../../../store";
 import { decimalMax, decimalMin, usnTokenId } from "../../../../utils/burrow";
 import { Portfolio } from "../accountState";
 import { Assets } from "../assetState";
-import { parseTokenAmount } from "../../../../components/swap/formatToken";
+import { hiddenAssets } from "../config";
+
 
 
 
@@ -17,9 +18,12 @@ export const predictByBorrow = (
   amount: number | string,
   tokenId: string
 ) => {
-  const asset = assets[tokenId];
+  const defaultTokenId = Object.keys(assets)
+    .filter((tokenId) => !hiddenAssets.includes(tokenId) && tokenId !== usnTokenId)[0];
 
-  const price = asset.price
+  const asset = assets[tokenId || defaultTokenId];
+
+  const price = asset?.price
     ? asset.price.usd
     : 0;
 
