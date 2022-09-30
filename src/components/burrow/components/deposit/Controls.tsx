@@ -5,7 +5,7 @@ import Slider from "./Slider";
 import Input from "./Input";
 
 
-export default function Controls({ amount, available, isUSN = false }) {
+export default function Controls({ amount, available, isUSN = false, icon, symbol }) {
     const dispatch = useDispatch();
 
     const handleInputChange = (e) => {
@@ -68,7 +68,9 @@ export default function Controls({ amount, available, isUSN = false }) {
                 onClickMax={handleMaxClick}
                 onChange={handleInputChange}
                 onFocus={handleFocus}
+                icon={icon}
                 isUSN={isUSN}
+                symbol={symbol}
             />
             <Box mx="1.5rem" my="1rem">
                 <Slider value={sliderValue} onChange={handleSliderChange} />

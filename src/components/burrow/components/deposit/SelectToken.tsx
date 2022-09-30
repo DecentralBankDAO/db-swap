@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { Box } from '@mui/material';
+import { Box, IconButton, InputAdornment } from '@mui/material';
 import { columns as defaultColumns } from "../../tabledata";
 import { IoCloseOutline } from "react-icons/io5";
 import MicroModal from 'react-micro-modal';
@@ -13,12 +13,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import Table from '../Table';
 import { usePortfolioAssets } from '../../hooks/usePortfolioAssets';
 import { getGlobalAction } from '../../../../redux/slices/Burrow/appSelectors';
+import TokenIcon from '../TokenIcon';
 
 export const isMobile = () => {
     return window.screen.width < 1024;
 };
 
-export const SelectToken = ({ apy, asset }) => {
+export const SelectToken = ({ icon, symbol }) => {
     const dispatch = useDispatch()
     const [visible, setVisible] = useState(false);
     const accountId = useAccountId();
@@ -49,9 +50,14 @@ export const SelectToken = ({ apy, asset }) => {
             open={visible}
             handleClose={handleClose}
             trigger={() => (
-                <Box onClick={() => setVisible(true)}>
-                    <TokenInfo apy={apy} asset={asset} />
-                </Box>
+                <InputAdornment position="start">
+                    <IconButton aria-label="max value" onClick={() => setVisible(true)}>
+                        <Box color='white' fontWeight={600} fontSize="14px" p='6px' bgcolor='#2a2835' borderRadius="8px" display="flex" alignItems="center" gap="5px">
+                            <TokenIcon icon={icon} />
+                            {symbol}
+                        </Box>
+                    </IconButton>
+                </InputAdornment>
             )}
             overrides={{
                 Overlay: {

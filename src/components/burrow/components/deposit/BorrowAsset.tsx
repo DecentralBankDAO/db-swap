@@ -27,7 +27,7 @@ const BorrowAsset = () => {
 
     const { isRepayFromDeposits } = useDegenMode();
     const { tokenId: asssetTokenId } = asset;
-    const { tokenId } = assetUSN;
+    const { tokenId, icon, symbol } = assetUSN;
 
     const healthFactor = useSelector(
         globalAction === "Withdraw"
@@ -66,13 +66,14 @@ const BorrowAsset = () => {
 
 
     const available$ = Number(maxBorrowAmount).toLocaleString(undefined, USD_FORMAT);
+    console.log("assetUSN", assetUSN);
 
     return (
         <>
             {globalAction === "Borrow" &&
                 <>
                     <Available label="USN to Borrow" totalAvailable={maxBorrowAmount} available$={available$} />
-                    <Controls amount={borrowAmount} available={maxBorrowAmount} isUSN={true} />
+                    <Controls amount={borrowAmount} available={maxBorrowAmount} isUSN={true} icon={icon} symbol={symbol} />
                 </>
             }
             <Stack

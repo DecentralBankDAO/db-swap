@@ -1,5 +1,5 @@
 import { Avatar, Box, SvgIcon } from "@mui/material";
-import { ReactComponent as NearLogo} from "./near.svg";
+import { ReactComponent as NearLogo } from "./near.svg";
 
 interface TokenIconProps {
   icon?: string;

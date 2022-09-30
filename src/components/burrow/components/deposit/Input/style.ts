@@ -7,9 +7,13 @@ export const Input = styled(OutlinedInput)(({ theme }) => ({
     fontWeight: "bold",
     background: "rgba(129,126,166,.2)",
     borderRadius: "8px",
+    textAlign: 'right',
     "&.MuiOutlinedInput-root": {
         "& > fieldset": {
             borderWidth: 1,
         },
+        "& > input": {
+            textAlign: 'right',
+        }
     },
 }));

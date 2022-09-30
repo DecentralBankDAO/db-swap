@@ -13,7 +13,7 @@ const DepositAsset = () => {
     const asset = useSelector(getAssetData);
     const { amount } = useSelector(getSelectedValues);
 
-    const { tokenId } = asset;
+    const { tokenId, icon, symbol } = asset;
 
     const maxWithdrawAmount = useSelector(getWithdrawMaxAmount(tokenId));
 
@@ -33,8 +33,7 @@ const DepositAsset = () => {
     return (
         <>
             <Available label={label} totalAvailable={available} available$={available$} />
-            <SelectToken apy={apy} asset={asset} />
-            <Controls amount={amount} available={available} />
+            <Controls amount={amount} available={available} icon={icon} symbol={symbol} />
         </>
     )
 }
