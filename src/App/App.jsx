@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from "react";
+import { useEffect } from "react";
 import { useNearWallet } from "react-near";
 
 import Router from "./Router";
@@ -7,6 +7,7 @@ import Loader from "./Loader";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import GlobalStyle from "../styles/GlobalStyle";
+import { useIdle, useInterval } from "react-use";
 import { Navbar } from "../components/navigation/NavBar";
 import {
     fetchAssets,
@@ -21,6 +22,8 @@ import { BlockedCountry } from "../components/swap/BlockedCountry";
 import { fetchNearBalance } from "../redux/slices/near";
 
 const { fetchTokens } = tokensActions;
+const IDLE_INTERVAL = 5e3;
+const REFETCH_INTERVAL = 30e3;
 
 function App() {
     // wait wallet for initialization
@@ -37,19 +40,23 @@ function App() {
     const WithWallet = ({ children }) => {
         const dispatch = useDispatch();
         const { accountId } = wallet.account();
+        const isIdle = useIdle(IDLE_INTERVAL);
 
-        useEffect(() => {
-            dispatch(fetchTokens({ accountId }));
-            dispatch(fetchNearBalance(accountId));
-        }, []);
-
-        useEffect(() => {
-            dispatch(fetchConfig(wallet));
+        const fetchData = () => {
             dispatch(fetchAssets(wallet)).then(() =>
                 dispatch(fetchRefPrices())
             );
             dispatch(fetchAccount(wallet));
+        };
+
+        useEffect(() => {
+            dispatch(fetchTokens({ accountId }));
+            dispatch(fetchNearBalance(accountId));
+            dispatch(fetchConfig(wallet));
         }, []);
+
+        useEffect(fetchData, []);
+        useInterval(fetchData, isIdle ? REFETCH_INTERVAL : null);
 
         return <>{children}</>;
     };

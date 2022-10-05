@@ -148,6 +148,7 @@ export interface IPortfolioAsset {
 
 export interface UIAsset {
   tokenId: string;
+  decimals: number;
   icon: string;
   symbol: string;
   name: string;

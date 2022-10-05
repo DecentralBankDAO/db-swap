@@ -1,13 +1,9 @@
 import { useState, useMemo } from "react";
-// import { Box, Typography, Switch, Tooltip, Alert } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 
-
-import { useDispatch, useSelector } from "react-redux";
-
-
+import { useSelector } from "react-redux";
 import { getAssetData, getAssetDataUSN, getGlobalAction, getSelectedValues } from "../../../redux/slices/Burrow/appSelectors";
-import { useDegenMode } from "../hooks/useDegenMode";
+
 import depositAndBorrow from "../../../store/actions/depositAndBorrow";
 import { useNearWallet } from "react-near";
 import { withdraw } from "../../../store/actions/withdraw";
@@ -32,12 +28,11 @@ export default function ActionBtn({ maxBorrowAmount, healthFactor }) {
   const [loading, setLoading] = useState(false);
   const { amount, isMax, borrowAmount } = useSelector(getSelectedValues);
   const globalAction = useSelector(getGlobalAction);
-  const dispatch = useDispatch();
   const asset = useSelector(getAssetData);
   const assetUSN = useSelector(getAssetDataUSN);
   const { tokenId, extraDecimals } = asset;
   const { tokenId: borrowTokenId, extraDecimals: borrowExtraDecimals } = assetUSN;
-  const { isRepayFromDeposits } = useDegenMode();
+
 
 
   const handleActionButtonClick = async () => {
@@ -80,45 +75,14 @@ export default function ActionBtn({ maxBorrowAmount, healthFactor }) {
   };
 
   const actionDisabled = useMemo(() => {
-    if (!amount && !borrowAmount) return true;
-    // if (action === "Supply" && amount > 0) return false;
-    // if (action !== "Adjust" && !amount) return true;
-    // if (
-    //   action !== "Repay" &&
-    //   parseFloat(healthFactor?.toFixed(2)) >= 0 &&
-    //   parseFloat(healthFactor?.toFixed(2)) <= 100
-    // )
-    //   return true;
-    return false;
-  }, [amount, borrowAmount, healthFactor]);
+    if (globalAction === "Borrow" && !amount && !borrowAmount) return true;
+    if (globalAction !== "Borrow" && !amount) return true;
 
-  //   const showToggle = action === "Supply";
+    return false;
+  }, [amount, borrowAmount, globalAction]);
 
   return (
     <>
-      {/* {showToggle && (
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb="0.5rem">
-          <Typography variant="body1" fontSize="0.85rem">
-            Use as Collateral
-          </Typography>
-          {!canUseAsCollateral && (
-            <Tooltip
-              sx={{ ml: "auto" }}
-              placement="top"
-              title="This asset can't be used as collateral yet"
-            >
-              <Box alignItems="center" display="flex">
-                <FcInfo />
-              </Box>
-            </Tooltip>
-          )}
-          <Switch
-            onChange={handleSwitchToggle}
-            checked={useAsCollateral}
-            disabled={!canUseAsCollateral}
-          />
-        </Box>
-      )} */}
       <LoadingButton
         disabled={actionDisabled}
         variant="contained"
@@ -136,11 +100,6 @@ export default function ActionBtn({ maxBorrowAmount, healthFactor }) {
       >
         {renderTextBtn(globalAction, amount, borrowAmount)}
       </LoadingButton>
-      {/* {action === "Repay" && isRepayFromDeposits && (
-        <Alert severity="warning">
-          This is an advanced feature. Please Do Your Own Research before using it.
-        </Alert>
-      )} */}
     </>
   );
 }

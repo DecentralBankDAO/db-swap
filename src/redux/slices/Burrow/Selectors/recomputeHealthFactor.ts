@@ -7,7 +7,7 @@ import { expandTokenDecimal, hasAssets, MAX_RATIO } from "../../../../store";
 import { getAdjustedSum, predictByBorrow } from "./getWithdrowMaxAmount";
 
 
-export const recomputeHealthFactor = (tokenId: string, amount: number, amountCollateral: number, collateralTokenId: string) =>
+export const recomputeHealthFactor = (tokenId: string, amount: number | string, amountCollateral: number | string, collateralTokenId: string) =>
     createSelector(
         (state: RootState) => state.assets,
         (state: RootState) => state.account,

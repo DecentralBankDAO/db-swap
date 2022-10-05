@@ -16,7 +16,7 @@ import { getTokenContract, isRegistered, prepareAndExecuteTransactions, Transact
 interface Props {
     tokenId: string;
     extraDecimals: number;
-    amount: number;
+    amount: number | string;
     isMax: boolean;
     wallet: any;
 }

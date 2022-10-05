@@ -28,7 +28,7 @@ const DepositAsset = () => {
         ? "Collateral assets"
         : globalAction === "Repay"
             ? "Repay assets"
-            : "Withdrow assets"
+            : "Withdraw assets"
 
     return (
         <>

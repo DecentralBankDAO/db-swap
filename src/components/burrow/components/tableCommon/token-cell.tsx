@@ -14,7 +14,7 @@ const TokenCell = ({ rowData, isCollateralList = false }) => {
         {rowData ? (
           <>
             <TokenIcon icon={rowData?.icon} />
-            {!isCollateralList && <Box marginLeft="5px" color="gray">{rowData.symbol}</Box>}
+            {!isCollateralList && <Box marginLeft="5px" color="white">{rowData.symbol}</Box>}
           </>
         ) : (
           <Skeleton sx={{ bgcolor: "gray" }} width={35} height={35} variant="circular" />
@@ -27,7 +27,7 @@ const TokenCell = ({ rowData, isCollateralList = false }) => {
             {isBurrowToken && !rowData.price ? (
               <BRRRPrice />
             ) : (
-              <Box color="gray">
+              <Box color={!isCollateralList ? "white" : "gray"}>
                 {rowData.price ? rowData.price.toLocaleString(undefined, USD_FORMAT) : "$-.-"}
               </Box>
             )}

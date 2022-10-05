@@ -1,6 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
 import Decimal from "decimal.js"
-import { toUsd, transformAsset } from "../../../store";
+import { hasAssets, toUsd, transformAsset } from "../../../store";
 import { hiddenAssets } from "./config";
 
 export const getAvailableAssets = (source: "supply" | "borrow") =>
@@ -17,7 +17,7 @@ export const getAvailableAssets = (source: "supply" | "borrow") =>
     },
   );
 
-  export const getTotalSupplyAndBorrowUSD = (tokenId: string) =>
+export const getTotalSupplyAndBorrowUSD = (tokenId: string) =>
   createSelector(
     (state) => state.assets,
     (assets) => {
@@ -33,6 +33,16 @@ export const getAvailableAssets = (source: "supply" | "borrow") =>
 
 
 export const getAssets = createSelector(
-    (state) => state.assets,
-    (assets) => assets,
-  )
+  (state) => state.assets,
+  (assets) => assets,
+)
+
+export const isHasAssets = createSelector(
+  (state) => state.assets,
+  (assets) => hasAssets(assets),
+)
+
+export const isAssetsFetching = createSelector(
+  (state) => state.assets,
+  (assets) => assets.status === "fetching",
+);

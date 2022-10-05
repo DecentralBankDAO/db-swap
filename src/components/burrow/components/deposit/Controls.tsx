@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { updateAmount, updateBorrowAmount } from "../../../../redux/slices/Burrow/appSlice";
 import Slider from "./Slider";
 import Input from "./Input";
+import Decimal from "decimal.js";
 
 
 export default function Controls({ amount, available, isUSN = false, icon, symbol }) {

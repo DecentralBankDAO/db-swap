@@ -15,7 +15,6 @@ export const getHealthFactor = createSelector(
     const adjustedBorrowedSum = getAdjustedSum("borrowed", portfolio, assets.data);
 
     const healthFactor = adjustedCollateralSum.div(adjustedBorrowedSum).mul(100).toNumber();
-    console.log('healthFactor', healthFactor);
 
     return healthFactor < MAX_RATIO ? healthFactor : MAX_RATIO;
   },

@@ -34,7 +34,7 @@ const Borrow = () => {
           </Box>
         </InfoBlock>
         <DepositBlock>
-          {!accountId ? <NotConnected /> : <Deposit />}
+          <Deposit />
         </DepositBlock>
       </Wrapper>
     </>

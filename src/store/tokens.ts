@@ -98,7 +98,7 @@ export const depositTransactions = async ({
 }: {
   tokenId: string;
   extraDecimals: number;
-  amount: number;
+  amount: number | string;
   isMax: boolean;
   wallet: any;
 }) => {
@@ -234,7 +234,7 @@ export const wNEARtransactions = async ({
   isMax,
   wallet,
 }: {
-  amount: number;
+  amount: number | string;
   isMax: boolean;
   wallet: any;
 }) => {

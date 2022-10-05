@@ -4,10 +4,10 @@ import { createSelector } from "@reduxjs/toolkit";
 
 
 import { RootState } from "../../../..";
-import { expandTokenDecimal, hasAssets, MAX_RATIO } from "../../../../store";
+import { expandTokenDecimal, hasAssets, MAX_RATIO, shrinkToken } from "../../../../store";
 import { getAdjustedSum } from "./getWithdrowMaxAmount"
 
-export const recomputeHealthFactorRepay = (tokenId: string, amount: number) =>
+export const recomputeHealthFactorRepay = (tokenId: string, amount: number | string) =>
     createSelector(
         (state: RootState) => state.assets,
         (state: RootState) => state.account,
@@ -22,7 +22,7 @@ export const recomputeHealthFactorRepay = (tokenId: string, amount: number) =>
             const newBalance = borrowedBalance.minus(expandTokenDecimal(amount, decimals));
 
             const clonedAccount = clone(account);
-            clonedAccount.portfolio.borrowed[tokenId].balance = newBalance.toFixed();
+            clonedAccount.portfolio.borrowed[tokenId].balance = newBalance.isNeg() ? 0 : newBalance.toFixed();
 
             const adjustedCollateralSum = getAdjustedSum("collateral", account.portfolio, assets.data);
             const adjustedBorrowedSum = getAdjustedSum("borrowed", clonedAccount.portfolio, assets.data);

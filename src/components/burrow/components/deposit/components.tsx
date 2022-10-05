@@ -45,6 +45,44 @@ export const NotConnected = () => (
   </Box>
 );
 
+export const WaitingForData = () => (
+  <Box
+    position="absolute"
+    display="flex"
+    justifyContent="center"
+    alignItems="center"
+    top="0"
+    left="0"
+    right="0"
+    bottom="0"
+    bgcolor="#2a2835"
+    zIndex="1"
+  >
+    <Box color="white" fontWeight={600}>
+      Waiting for data...
+    </Box>
+  </Box>
+)
+
+export const DataError = () => (
+  <Box
+    position="absolute"
+    display="flex"
+    justifyContent="center"
+    alignItems="center"
+    top="0"
+    left="0"
+    right="0"
+    bottom="0"
+    bgcolor="#2a2835"
+    zIndex="1"
+  >
+    <Box color="white" fontWeight={600}>
+      Ouch. Something went wrong, please try refreshing the page.
+    </Box>
+  </Box>
+)
+
 export const CloseButton = ({ onClose, ...props }) => (
   <Box
     onClick={onClose}

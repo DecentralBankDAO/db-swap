@@ -7,7 +7,7 @@ import { RootState } from "../../../..";
 import { getAdjustedSum } from "./getWithdrowMaxAmount";
 import { decimalMin } from "../../../../utils/burrow";
 
-export const recomputeHealthFactorWithdraw = (tokenId: string, amount: number) =>
+export const recomputeHealthFactorWithdraw = (tokenId: string, amount: number | string) =>
     createSelector(
         (state: RootState) => state.assets,
         (state: RootState) => state.account,

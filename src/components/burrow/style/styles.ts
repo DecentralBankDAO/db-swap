@@ -25,7 +25,7 @@ export const InfoBlock = styled("div")(({ theme }) => ({
 
 export const DepositBlock = styled("div")(({ theme }) => ({
   padding: '30px 30px 50px',
-  minHeight: '520px',
+  minHeight: '100%',
   borderRadius: '30px',
   backgroundColor: '#2a2835',
   maxWidth: '100%',

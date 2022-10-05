@@ -83,10 +83,11 @@ function Table({ rows, columns, onRowClick, sorting, sx = {} }: TableProps) {
                 sortDirection={sorting.property === dataKey ? sorting.order : false}
               >
                 <TableSortLabel
-                  active={sorting.property === dataKey}
+                  // active={sorting.property === dataKey}
+                  color="white"
                   direction={sorting.property === dataKey ? sorting.order : "asc"}
                   onClick={createSortHandler(dataKey)}
-                  sx={{ minWidth: [100, 100, "auto"], ...(sortLabelStyle || {}) }}
+                  sx={{ minWidth: [100, 100, "auto"], ...(sortLabelStyle || {}), color: "white" }}
                 >
                   {label}
                   {sorting.property === dataKey ? (
@@ -106,7 +107,7 @@ function Table({ rows, columns, onRowClick, sorting, sx = {} }: TableProps) {
               sx={{
                 "&:last-child td, &:last-child th": { border: 0 },
                 cursor: onRowClick && "pointer",
-                "&:hover": { background: onRowClick && theme.palette.background.default },
+                "&:hover": { background: onRowClick && "rgba(193, 181, 130, 0.3)" },
                 padding,
               }}
               onClick={() => onRowClick && rowData && onRowClick(rowData)}

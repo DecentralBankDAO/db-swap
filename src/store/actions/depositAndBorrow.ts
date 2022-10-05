@@ -32,7 +32,7 @@ const depositAndBorrow = async ({
 }: {
   tokenId: string;
   extraDecimals: number;
-  amount: number;
+  amount: number | string;
   isMax: boolean;
   borrowTokenId: string;
   borrowExtraDecimals: number;
@@ -40,8 +40,6 @@ const depositAndBorrow = async ({
   wallet: any;
 }) => {
   const transactions: Transaction[] = [];
-
-  const { account } = await getBurrow(wallet);
 
   const depositTR = await depositTransactions({
     tokenId,

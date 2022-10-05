@@ -156,6 +156,7 @@ export const transformAsset = (
 
   return {
     tokenId,
+    decimals: asset.metadata.decimals,
     ...pick(["icon", "symbol", "name"], asset.metadata),
     price: tokenId === USNcontractId && !asset.price ? 1 : asset.price ? asset.price.usd : 0,
     supplyApy: Number(asset.supply_apr) * 100,

@@ -16,7 +16,7 @@ export async function repay({
     wallet
 }: {
     tokenId: string;
-    amount: number;
+    amount: number | string;
     extraDecimals: number;
     isMax: boolean;
     wallet: any;
@@ -43,13 +43,15 @@ export async function repay({
 
     const maxAvailableBalance = isNEAR ? tokenBalance.add(accountBalance) : tokenBalance;
     const maxAmount = decimalMin(tokenBorrowedBalance, maxAvailableBalance);
-    const expandedAmount = expandTokenDecimal(amount, decimals + extraDecimals);
+    const expandedAmountToken = isMax
+        ? maxAmount
+        : decimalMin(maxAmount, expandTokenDecimal(amount, decimals));
 
     const msg = {
         Execute: {
             actions: [
                 {
-                    RepayUsn: expandedAmount.toFixed(0),
+                    RepayUsn: expandedAmountToken.mul(extraDecimalMultiplier).toFixed(0),
                 },
             ],
         },
@@ -60,7 +62,7 @@ export async function repay({
         gas: new BN("150000000000000"),
         args: {
             receiver_id: logicContract.contractId,
-            amount: expandedAmount.toFixed(0),
+            amount: expandedAmountToken.toFixed(0),
             msg: JSON.stringify(msg),
         },
     });

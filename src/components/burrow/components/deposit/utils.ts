@@ -1,5 +1,5 @@
 import { UIAsset } from "../../../../interfaces";
-import { NEAR_STORAGE_DEPOSIT, PERCENT_DIGITS, TOKEN_FORMAT, USD_FORMAT } from "../../../../store";
+import { APY_FORMAT, NEAR_STORAGE_DEPOSIT, PERCENT_DIGITS, TOKEN_FORMAT, USD_FORMAT } from "../../../../store";
 
 interface Alert {
     [key: string]: {
@@ -46,6 +46,7 @@ export const getModalData = (asset): UIAsset & Props => {
         amount,
         maxWithdrawAmount,
         isRepayFromDeposits,
+        tokenId
     } = asset;
 
     const data: any = {
@@ -87,8 +88,8 @@ export const getModalData = (asset): UIAsset & Props => {
             data.rates = [
                 { label: "Collateral Factor", value: collateralFactor },
                 {
-                    label: "Pool Liquidity",
-                    value: availableLiquidity.toLocaleString(undefined, TOKEN_FORMAT),
+                    label: "Borrow Apy",
+                    value: borrowApy.toLocaleString(undefined, APY_FORMAT) + "%",
                 },
             ];
 

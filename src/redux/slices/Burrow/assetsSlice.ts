@@ -33,7 +33,7 @@ export const assetSlice = createSlice({
     builder.addCase(fetchAssets.fulfilled, (state, action) => {
       state.data = action.payload.assets;
       // state.netTvlFarm = action.payload.netTvlFarm?.rewards || {};
-      state.status = action.meta.requestStatus;
+      // state.status = action.meta.requestStatus;
       state.fetchedAt = new Date().toString();
     });
     builder.addCase(fetchAssets.rejected, (state, action) => {
@@ -52,6 +52,7 @@ export const assetSlice = createSlice({
             multiplier: "1",
           };
         }
+        state.status = "fulfilled"
       });
     });
     builder.addCase(fetchRefPrices.pending, (state) => {

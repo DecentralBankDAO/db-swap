@@ -1,5 +1,4 @@
 import { Box, Stack, Typography } from '@mui/material'
-import Decimal from 'decimal.js'
 import { useSelector } from 'react-redux'
 import { getAssetData, getAssetDataUSN, getGlobalAction, getSelectedValues } from '../../../../redux/slices/Burrow/appSelectors'
 import { getBorrowMaxAmount } from '../../../../redux/slices/Burrow/Selectors/getBorrowMaxAmount'
