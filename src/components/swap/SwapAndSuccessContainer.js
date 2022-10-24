@@ -11,8 +11,8 @@ import { actions } from '../../redux/slices/tokens';
 import { fetchNearBalance } from '../../redux/slices/near';
 import { useNearWallet } from 'react-near';
 import { useLocation, useNavigate } from 'react-router';
-import { formatNearAmount, formatTokenAmount } from './formatToken';
-import Loader from '../../App/Loader';
+import { formatTokenAmount } from './formatToken';
+
 
 const { REACT_APP_NEAR_ENV } = process.env;
 
@@ -58,9 +58,9 @@ const StyledContainer = styled(Container)`
             height: 50px;
             border-radius: 50%;
             z-index: 1;
-            :hover {
+            /* :hover {
                 box-shadow: 0px 0px 1px 2px #ffffff;
-            }
+            } */
         }
         .iconSwapDivider {
             width: 100%;

@@ -2,9 +2,7 @@ import React, { useCallback, useState } from 'react';
 import styled from 'styled-components'
 import { useDispatch } from 'react-redux';
 
-import { fetchMultiplier, fetchMultiplierTWAP } from '../../../redux/slices/multiplier';
 import FormButton from '../common/FormButton';
-import SwapIconTwoArrows from '../../../assets/svg/SwapIconTwoArrows';
 import AvailableToSwap from '../AvailableToSwap';
 import {
     formatNearAmount,
@@ -13,15 +11,12 @@ import {
     multiplyNumbers,
     subsctractNumbers,
     plusNumbers,
-    parseTokenAmount
 } from '../formatToken';
-import { commission, replacedValue } from '../helpers';
-import Loader from '../Loader';
+import { replacedValue } from '../helpers';
 import SwapInfoContainer from '../SwapInfoContainer';
 import SwapTokenContainer from '../SwapTokenContainer';
 import { useFetchByorSellUSN } from '../../../hooks/fetchByorSellUSN';
 import { useNearWallet } from 'react-near';
-import { usePredict } from '../../../hooks/usePredict';
 import { getBalanceFromPool } from '../utils/getBalanceFromPool';
 import { Alert } from '../Alert';
 
@@ -46,10 +41,7 @@ const SwapPage = ({
   to,
   multiplier,
   accountId,
-  onSwap,
-  setActiveView,
   setErrorFromHash,
-  multipliers
 }) => {
     const wallet = useNearWallet();
 
@@ -74,7 +66,6 @@ const SwapPage = ({
         !inputValues.fromAmount ||
         inputValues.fromAmount == 0;
 
-    const dispatch = useDispatch();
     const onHandleSwapTokens = useCallback(async (accountId, inputValueFrom, symbol, fullAmount) => {
         try {
             setIsLoading(true);
@@ -116,12 +107,6 @@ const SwapPage = ({
 
     return (
         <>
-            <div className='wrap'>
-               <Loader onRefreshMultiplier={() => {
-                    dispatch(fetchMultiplier());
-                    dispatch(fetchMultiplierTWAP());
-               }}/>
-            </div>
             <StyledWrapper>
                 <SwapTokenContainer
                 fromToToken={from}
