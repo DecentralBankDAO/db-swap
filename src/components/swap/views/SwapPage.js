@@ -131,7 +131,7 @@ const SwapPage = ({
                     isUSN={false}
                     onClick={(balance) => {
                         console.log('balance', balance);
-                        setInputValues({fromAmount: balance, toAmount: parseFloat(subsctractNumbers(balance, divNumbers(multiplyNumbers(balance, 1), 10000))).toString()});
+                        setInputValues({fromAmount: balance, toAmount: parseFloat(subsctractNumbers(balance, divNumbers(multiplyNumbers(balance, 0), 1))).toString()});
                         setFullAmount(from?.balance);
                     }}
                     balance={from?.balance}
