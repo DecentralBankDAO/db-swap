@@ -17,7 +17,7 @@ export const getBalanceFromPool = ({ amount, wallet }) => {
             account_id: usnContractName,
         })
         .then((balance) => setUsdtBalance(formatTokenAmount(balance, 6, 4)));
-
+    
     if (Number(amount) > Number(usdtBalance))
         return {
             message: true,

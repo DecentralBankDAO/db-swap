@@ -50,13 +50,11 @@ const SwapPage = ({
         fromAmount: "",
         toAmount: "",
     });
-    const inputAmount = inputValues.fromAmount || 0;
-    const tradingFee = divNumbers(multiplyNumbers(inputAmount, 1), 10000);
-    const minReceivedAmount = subsctractNumbers(inputAmount, tradingFee);
+
     const { fetchByOrSell, isLoading, setIsLoading } = useFetchByorSellUSN(
         wallet.account()
     );
-    const { message, usdtBalance} = getBalanceFromPool({
+    const {message, usdtBalance} = getBalanceFromPool({
         amount: inputValues.fromAmount,
         wallet
     })
@@ -86,22 +84,38 @@ const SwapPage = ({
 
     const handleChange = (e) => {
         const { value } = e.target;
+        const isUSDT = from?.onChainFTMetadata?.symbol === "USDT.e";
         const replaceValue = replacedValue(e.target.dataset.token, value);
 
-        if(e.target.name === 'FROM') {
+        if (e.target.name === "FROM") {
             setInputValues({
-                fromAmount: value ? replaceValue : '',
-                toAmount: value ? replaceValue : ''
+                fromAmount: value ? replaceValue : "",
+                toAmount: parseFloat(
+                    subsctractNumbers(
+                        value ? replaceValue : 0,
+                        divNumbers(
+                            multiplyNumbers(value ? replaceValue : 0, 0),
+                            1
+                        )
+                    )
+                ).toString(),
             });
         } else {
-            const withPercent = plusNumbers(value ? replaceValue : 0, divNumbers(multiplyNumbers(value ? replaceValue : 0, 1), 10000));
-            const currentAmount = plusNumbers(value ? replaceValue : 0, divNumbers(multiplyNumbers(withPercent, 1), 10000));
+            const withPercent = plusNumbers(
+                value ? replaceValue : 0,
+               0
+            );
+            const currentAmount = plusNumbers(
+                value ? replaceValue : 0,
+                divNumbers(multiplyNumbers(withPercent, 0), 1)
+            );
             setInputValues({
-                fromAmount: value ? replaceValue : '',
-                toAmount: value ? replaceValue : ''
-            }); 
+                fromAmount: parseFloat(
+                    Number(currentAmount).toFixed(isUSDT ? 6 : 18)
+                ).toString(),
+                toAmount: value ? replaceValue : "",
+            });
         }
-        
     };
 
     return (
@@ -133,7 +147,6 @@ const SwapPage = ({
                     setInputValues={handleChange}
                     multiplier={multiplier}
                     value={inputValues.toAmount}
-                    sum={minReceivedAmount}
                 />
                 <AvailableToSwap
                     isUSN={true}
@@ -150,7 +163,6 @@ const SwapPage = ({
                 token={from?.onChainFTMetadata?.symbol}
                 amount={inputValues.fromAmount}
                 min={inputValues.toAmount}
-                tradingFee={tradingFee}
             />
             <div className="buttons-bottom-buttons">
                 <FormButton
@@ -165,7 +177,7 @@ const SwapPage = ({
                 >
                   {accountId ? <>Redeem USN</> : <>Connect to Wallet</>}
                 </FormButton>
-                {message && <Alert usdtBalance={usdtBalance}/>}
+                {message && <Alert usdtBalance={usdtBalance} />}
             </div>
         </>
     );
