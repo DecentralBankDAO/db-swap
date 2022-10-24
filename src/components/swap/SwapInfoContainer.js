@@ -68,12 +68,7 @@ function SwapInfoContainer({
             <SwapInfoItem
                 // isDots={isLoading}
                 leftText={'Trading fee'}
-                rightText={formatAmount({
-                    amount,
-                    symbol,
-                    tradingFee,
-                    value: `${feePercent}% / ${tradingFee}`,
-                })}
+                rightText={'0%'}
             />
             <SwapInfoItem
                 // isDots={isLoading}
@@ -84,7 +79,7 @@ function SwapInfoContainer({
                 //     tradingFee,
                 //     value: MinimumReceived({ token: symbol, balance: amount, exchangeRate }) - tradingFee,
                 // })}
-                rightText={amount ? `${min} ${symbol}` : `0 ${symbol}`}
+                rightText={(amount || 0) + ' USDT.e'}
             />
         </StyledContainer>
     );

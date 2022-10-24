@@ -12,8 +12,8 @@ export const subsctractNumbers = (firstValue, secondValue) =>
 export const plusNumbers = (firstValue, secondValue) =>
     Big(firstValue).plus(Big(secondValue)).toString();
 export const formatTokenAmount = (value, decimals = 18, precision = 5) => value && typeof value !== 'object' 
-? parseFloat(Big(value).div(Big(10).pow(decimals)).toFixed(precision)) 
-: 0;
+    ? Big(value).div(Big(10).pow(decimals)).toFixed(precision)
+    : 0;
 export const parseTokenAmount = (value, decimals = 18) => value && Big(value).times(Big(10).pow(decimals)).toFixed();
 
 export const formatNearAmount = (amount) => {

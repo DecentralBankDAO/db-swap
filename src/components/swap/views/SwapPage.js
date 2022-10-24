@@ -56,7 +56,7 @@ const SwapPage = ({
     const { fetchByOrSell, isLoading, setIsLoading } = useFetchByorSellUSN(
         wallet.account()
     );
-    const message = getBalanceFromPool({
+    const { message, usdtBalance} = getBalanceFromPool({
         amount: inputValues.fromAmount,
         wallet
     })
@@ -86,19 +86,18 @@ const SwapPage = ({
 
     const handleChange = (e) => {
         const { value } = e.target;
-        const isUSDT = from?.onChainFTMetadata?.symbol === 'USDT.e'
         const replaceValue = replacedValue(e.target.dataset.token, value);
 
         if(e.target.name === 'FROM') {
             setInputValues({
                 fromAmount: value ? replaceValue : '',
-                toAmount: parseFloat(subsctractNumbers(value ? replaceValue : 0, divNumbers(multiplyNumbers(value ? replaceValue : 0, 1), 10000))).toString()
+                toAmount: value ? replaceValue : ''
             });
         } else {
             const withPercent = plusNumbers(value ? replaceValue : 0, divNumbers(multiplyNumbers(value ? replaceValue : 0, 1), 10000));
             const currentAmount = plusNumbers(value ? replaceValue : 0, divNumbers(multiplyNumbers(withPercent, 1), 10000));
             setInputValues({
-                fromAmount: parseFloat(Number(currentAmount).toFixed(isUSDT ? 6 : 18)).toString(),
+                fromAmount: value ? replaceValue : '',
                 toAmount: value ? replaceValue : ''
             }); 
         }
@@ -166,7 +165,7 @@ const SwapPage = ({
                 >
                   {accountId ? <>Redeem USN</> : <>Connect to Wallet</>}
                 </FormButton>
-                {message && <Alert message={message} />}
+                {message && <Alert usdtBalance={usdtBalance}/>}
             </div>
         </>
     );
