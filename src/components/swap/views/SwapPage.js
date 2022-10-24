@@ -22,6 +22,8 @@ import SwapTokenContainer from '../SwapTokenContainer';
 import { useFetchByorSellUSN } from '../../../hooks/fetchByorSellUSN';
 import { useNearWallet } from 'react-near';
 import { usePredict } from '../../../hooks/usePredict';
+import { getBalanceFromPool } from '../utils/getBalanceFromPool';
+import { Alert } from '../Alert';
 
 const { REACT_APP_NEAR_ENV } = process.env;
 const contractId  = REACT_APP_NEAR_ENV === 'testnet' ? 'usdn.testnet' : 'usn'
@@ -50,47 +52,37 @@ const SwapPage = ({
   multipliers
 }) => {
     const wallet = useNearWallet();
-    const [isSwapped, setIsSwapped] = useState(false);
-    const [slippageValue, setSlippageValue] = useState('1');
-    const [fullAmount, setFullAmount] = useState('');
+
+    const [fullAmount, setFullAmount] = useState("");
     const [inputValues, setInputValues] = useState({
-        fromAmount: '',
-        toAmount: ''
-    });
-    const { commissionFee, isLoadingCommission } = commission({
-        accountId: wallet.account(),
-        amount: inputValues.fromAmount,
-        delay: 500,
-        exchangeRate: + multiplier,
-        token: from,
-        isSwapped,
+        fromAmount: "",
+        toAmount: "",
     });
     const inputAmount = inputValues.fromAmount || 0;
     const tradingFee = divNumbers(multiplyNumbers(inputAmount, 1), 10000);
     const minReceivedAmount = subsctractNumbers(inputAmount, tradingFee);
-    const { fetchByOrSell, isLoading, setIsLoading } = useFetchByorSellUSN(wallet.account());
-    const predict = usePredict(wallet.account(), inputValues.fromAmount ? inputValues.fromAmount : '1', multipliers, from?.onChainFTMetadata?.symbol, accountId)
+    const { fetchByOrSell, isLoading, setIsLoading } = useFetchByorSellUSN(
+        wallet.account()
+    );
+    const message = getBalanceFromPool({
+        amount: inputValues.fromAmount,
+        wallet
+    })
     const balance = balanceForError(from);
-    const error = balance < +inputValues.fromAmount || !inputValues.fromAmount || inputValues.fromAmount == 0;
-    const slippageError = slippageValue < 0.01 || slippageValue > 99.99;
-    // const currentMultiplier = predict?.rate * 10000
-    const dispatch = useDispatch()
-    const onHandleSwapTokens = useCallback(async (accountId, multiplier, slippageValue, inputValueFrom, symbol, fullAmount) => {
+    const error =
+        balance < +inputValues.fromAmount ||
+        !inputValues.fromAmount ||
+        inputValues.fromAmount == 0;
+
+    const dispatch = useDispatch();
+    const onHandleSwapTokens = useCallback(async (accountId, inputValueFrom, symbol, fullAmount) => {
         try {
             setIsLoading(true);
             await fetchByOrSell(accountId, inputValueFrom, symbol, fullAmount, wallet);
-            // setActiveView('success');
         } catch (e) {
             setErrorFromHash(e.message);
-            // setActiveView('success');
-            // dispatch(showCustomAlert({
-            //     errorMessage: e.message,
-            //     success: false,
-            //     messageCodeHeader: 'error',
-            // }));
         } finally {
             setIsLoading(false);
-            // dispatch(checkAndHideLedgerModal());
         }
     }, []);
 
@@ -148,24 +140,10 @@ const SwapPage = ({
                     symbol={from?.onChainFTMetadata?.symbol}
                     decimals={from?.onChainFTMetadata?.decimals}
                 />
-                <div
-                    className="iconSwapContainer"
-                >
-                    <div
-                        className="iconSwap"
-                        onClick={() => {
-                            onSwap();
-                            setIsSwapped((prev) => !prev);
-                        }}
-                    >
-                        <SwapIconTwoArrows
-                            width="23"
-                            height="23"
-                            color="#FFF"
-                        />
-                    </div>
+                <div className="iconSwapContainer">
+                    <div className="iconSwap"></div>
                     <div className="iconSwapDivider"/>
-                </div>
+                 </div>
                 <SwapTokenContainer
                     fromToToken={to}
                     setInputValues={handleChange}
@@ -185,39 +163,25 @@ const SwapPage = ({
                 />
             </StyledWrapper>
             <SwapInfoContainer
-                slippageError={slippageError}
-                slippageValue={slippageValue}
-                setSlippageValue={setSlippageValue}
                 token={from?.onChainFTMetadata?.symbol}
                 amount={inputValues.fromAmount}
-                // tradingFee={commissionFee?.result}
-                // expected={inputValueFrom? predict?.sum : '0'}
-                // rate={predict?.rate}
                 min={inputValues.toAmount}
                 tradingFee={tradingFee}
-                isLoading={isLoadingCommission}
             />
             <div className="buttons-bottom-buttons">
                 <FormButton
                     type="submit"
                     color='dark-gold'
-                    disabled={!accountId ? false : error || slippageError || isLoading}
+                    disabled={!accountId ? false : error || isLoading || message}
                     data-test-id="sendMoneyPageSubmitAmountButton"
                     onClick={() => accountId
-                        ? onHandleSwapTokens(accountId, predict.rateFull, slippageValue, inputValues.fromAmount, from?.onChainFTMetadata?.symbol, fullAmount)
+                        ? onHandleSwapTokens(accountId, inputValues.fromAmount, from?.onChainFTMetadata?.symbol, fullAmount)
                         : signIn()}
                     sending={isLoading}
                 >
-                  {accountId ? <>Continue</> : <>Connect to Wallet</>}
+                  {accountId ? <>Redeem USN</> : <>Connect to Wallet</>}
                 </FormButton>
-                {/* <FormButton
-                    type="button"
-                    className="link"
-                    color="gray"
-                    linkTo="/"
-                >
-                    <>Cancel</>
-                </FormButton> */}
+                {message && <Alert message={message} />}
             </div>
         </>
     );

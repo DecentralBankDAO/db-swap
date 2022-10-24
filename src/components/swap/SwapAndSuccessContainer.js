@@ -100,8 +100,12 @@ const StyledContainer = styled(Container)`
         width: fit-content;
         font-style: normal;
         font-weight: 700;
-        font-size: 20px;
+        font-size: 22px;
         line-height: 28px;
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-align: center;
         color: #fff;
         margin: 0 auto;
@@ -131,8 +135,14 @@ const SwapAndSuccessContainer = ({
     accountId,
     multipliers,
 }) => {
-    const [from, setFrom] = useState({ onChainFTMetadata: {symbol: 'USDT.e'}, balance: '0'});
-    const [to, setTo] = useState({ onChainFTMetadata: {symbol: 'USN'}, balance: '0'});
+    const [from, setFrom] = useState({
+        onChainFTMetadata: { symbol: "USN" },
+        balance: "0",
+    });
+    const [to, setTo] = useState({
+        onChainFTMetadata: { symbol: "USDT.e" },
+        balance: "0",
+    });
     const [activeView, setActiveView] = useState(VIEWS_SWAP.MAIN);
     const [methodFromHash, setMethodFromHash] = useState('buy')
     const [errorFromHash, setErrorFromHash] = useState('')
@@ -150,8 +160,8 @@ const SwapAndSuccessContainer = ({
     useEffect(() => {
         
         if(accountId) {
-            setFrom(currentToken(fungibleTokensList, from?.onChainFTMetadata?.symbol || 'USDT.e'));
-            setTo(currentToken(fungibleTokensList, to?.onChainFTMetadata?.symbol || 'USN'));
+            setFrom(currentToken(fungibleTokensList, from?.onChainFTMetadata?.symbol || "USN"));
+            setTo(currentToken(fungibleTokensList, to?.onChainFTMetadata?.symbol || "USDT.e"));
         }
     }, [fungibleTokensList]);
 
