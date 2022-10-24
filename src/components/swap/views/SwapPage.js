@@ -177,7 +177,7 @@ const SwapPage = ({
                 >
                   {accountId ? <>Redeem USN</> : <>Connect to Wallet</>}
                 </FormButton>
-                {message && <Alert usdtBalance={usdtBalance} />}
+                {message && !error && <Alert usdtBalance={usdtBalance} />}
             </div>
         </>
     );
