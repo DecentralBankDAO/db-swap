@@ -17,7 +17,7 @@ export const getBalanceFromPool = ({ amount, wallet }) => {
             account_id: usnContractName,
         })
         .then((balance) => setUsdtBalance(formatTokenAmount(balance, 6)));
-    console.log('usdtBalance', usdtBalance);
+        
     if (Number(amount) > usdtBalance)
         return "All good! Please do not worry! Currently you are not able to withdraw USDT due to DCB toping up the reserves. You will be able to withdraw USDT soon. Thank you.";
 
