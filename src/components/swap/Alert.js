@@ -20,11 +20,13 @@ const AlertWarapper = styled.div`
     }
 `;
 
-export const Alert = ({ message }) => {
+export const Alert = ({ usdtBalance }) => {
   return (
       <AlertWarapper>
           <img src={Warning} />
-          <span>{message}</span>
+          <span>{`Oops. Currently you can exchange upto ${usdtBalance} USN. For further redeeming of USN please proceed to `}
+            <a href="https://usnpp.auroralabs.dev/" target="_blank">https://usnpp.auroralabs.dev/</a>
+          </span>
       </AlertWarapper>
   );
 };

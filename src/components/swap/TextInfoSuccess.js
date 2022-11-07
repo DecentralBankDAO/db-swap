@@ -18,7 +18,7 @@ const TextInfoSuccess = ({ valueFrom, valueTo, symbol, errorFromHash }) => {
             </>
             <br />
             <>
-                <>To</>  {valueTo} {isNear ? USDT : USN }
+                <>To</>  {valueFrom} {isNear ? USDT : USN }
             </>
         </div>
         : <div className="text_info_success">
