@@ -1,7 +1,7 @@
 import * as nearApiJs from 'near-api-js';
 
 const { REACT_APP_NEAR_ENV } = process.env;
-const NODE_URL = REACT_APP_NEAR_ENV === 'testnet' ? 'https://rpc.nearprotocol.com' : 'https://rpc.mainnet.near.org'
+const NODE_URL = REACT_APP_NEAR_ENV === 'testnet' ? 'https://rpc.testnet.near.org' : 'https://rpc.mainnet.near.org'
 const KEY_ACTIVE_ACCOUNT_ID = 'null_wallet_auth_key'
 const NETWORK_ID = REACT_APP_NEAR_ENV === 'testnet' ? 'testnet' : 'mainnet'
 const contractId  = REACT_APP_NEAR_ENV === 'testnet' ? 'usdn.testnet' : 'usn'
