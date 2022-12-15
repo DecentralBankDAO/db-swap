@@ -88,7 +88,6 @@ export const executeMultipleTransactions = async (
           })
         );
 
-          console.log('currentTransactions', currentTransactions);
     return specialWallet.requestSignTransactions(currentTransactions, callbackUrl);
   };
 
@@ -150,14 +149,12 @@ export const useFetchByorSellUSN = (account) => {
                 usnContractName,
                 usnMethods
             );
-            // const bounds = await usdtContract.storage_balance_bounds()
             const storage = await usdtContract.storage_balance_of({"account_id": accountId});
             if(!storage) {
                 const bounds = await usdtContract.storage_balance_bounds();
                 tokenOutActions.push({
                     methodName: 'storage_deposit',
                     args: {
-                      // registration_only: true,
                       account_id: accountId,
                     },
                     gas: '30000000000000',
@@ -176,7 +173,6 @@ export const useFetchByorSellUSN = (account) => {
                     },
                     amount: ONE_YOCTO_NEAR,
                     gas: GAS_FOR_CALL,
-                    // deposit: '1',
                   });
             
                   transactions.push({

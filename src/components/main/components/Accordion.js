@@ -43,7 +43,6 @@ const accordionData = [
             </br>
             <p>In the future, $USN can be supported by a tri- or quadri-pool of stablecoins as new assets are added to the Reserves.</p>
         `,
-        // p2: '$USN combines some of the best approaches to stablecoins as a semi-algorithmic stablecoin with an on-chain arbitrage mechanism backed by $NEAR, as well as $USDT at launch. Through an on-chain arbitrage model, $USN untaps the growth potential of $UST, while securing a strong peg defense like $FRAX through a self-balancing reserve. Furthermore, while the $USN Reserve Fund is initially double-collateralized by $NEAR and $USDT, there is no overcollateralization on the part of the user; 1 $USN will always be minted for $1 worth of $NEAR.',
         title: 'How does $USN maintain its peg?'
     },
     {

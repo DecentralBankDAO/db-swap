@@ -122,7 +122,7 @@ export function Footer() {
                     <Git onClick={() => window.open('https://github.com/orgs/DecentralBankDAO', '_blank')}/>
                 </div>
                 <div className='first_group'>
-                    <Discord onClick={() => window.open('http://discord.gg/decentralbank', '_blank')}/> 
+                    <Discord onClick={() => window.open('https://discord.gg/decentralbank', '_blank')}/> 
                     <Medium onClick={() => window.open('https://medium.com/@dcntrlbank', '_blank')}/> 
                     <span>Contact  us</span>
                     <Email  onClick={() => window.location.href = 'mailto:dcntrlbankdao@gmail.com'}/>

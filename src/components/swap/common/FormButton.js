@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Translate } from 'react-localize-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import classNames  from '../utils/classNames';

@@ -115,13 +115,6 @@ const SwapTokenContainer = ({
 
     const error = balance < +value;
     
-
-    // const onFocus = () => {
-    //     if (USDT) {
-    //         inputRef.current.focus();
-    //     }
-    // };
-    
     return (
         <SwapContainer className={error ? 'error' : ''}>
             <div className="symbolFlex">
@@ -163,7 +156,6 @@ const SwapTokenContainer = ({
                         autoComplete='off'
                         name={USDT ? 'FROM' : 'TO'}
                         data-token={fromToToken?.onChainFTMetadata?.symbol === 'USDT' ? 'USDT' : 'USN'}
-                        // maxLength={maxLength(value, fromToToken?.onChainFTMetadata?.symbol)}
                         autoFocus={USDT}
                         placeholder='0'
                         value={value.replace(',', '.')}

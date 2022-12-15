@@ -98,7 +98,3 @@ export const selectMultiplier = createSelector(
     ({ prices }) => prices || {}
 );
 
-// export const selectMetadataSlice = createSelector(
-//     selectMultiplier,
-//     (prices) => prices.multiplier || {}
-// );

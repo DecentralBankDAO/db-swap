@@ -7,7 +7,7 @@ export const divNumbers = (firstValue, secondValue) =>
     Big(firstValue).div(secondValue).toString();
 export const multiplyNumbers = (firstValue, secondValue) =>
     Big(firstValue).times(secondValue).toString();
-export const subsctractNumbers = (firstValue, secondValue) =>
+export const substractNumbers = (firstValue, secondValue) =>
     Big(firstValue).sub(Big(secondValue)).toFixed(5);
 export const plusNumbers = (firstValue, secondValue) =>
     Big(firstValue).plus(Big(secondValue)).toString();

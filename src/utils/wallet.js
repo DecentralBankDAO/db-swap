@@ -75,30 +75,6 @@ class Wallet {
         const account = await this.getAccount(accountId);
         return await account.getAccountBalance(limitedAccountData);
     }
-
-    async requestSignInWallet() {
-        console.log('requestSignInWallet');
-        const config = process.env.REACT_APP_NEAR_ENV === 'mainnet'
-             ? {
-                networkId: 'mainnet',
-                nodeUrl: 'https://rpc.mainnet.near.org',
-                keyStore: new keyStores.BrowserLocalStorageKeyStore(),
-                walletUrl: 'https://wallet.mainnet.near.org',
-                helperUrl: 'https://helper.mainnet.near.org',
-            }
-            : {
-                networkId: 'testnet',
-                nodeUrl: 'https://rpc.testnet.near.org',
-                keyStore: new keyStores.BrowserLocalStorageKeyStore(),
-                walletUrl: 'https://wallet.testnet.near.org',
-                helperUrl: 'https://helper.testnet.near.org',
-            };
-        const near = await connect(config)
-        const wallet = new WalletConnection(near)
-        wallet.requestSignIn({
-            contractId: contractId
-        })
-    }
 }
 
 export const wallet = new Wallet();

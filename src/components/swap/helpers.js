@@ -8,9 +8,17 @@ const { REACT_APP_NEAR_ENV } = process.env;
 const IS_MAINNET = REACT_APP_NEAR_ENV === 'testnet' ? false : true;
 
 export const replacedValue = (flag, value) => {
-    return flag === 'USDT.e'
-        ? value.replace(',', '.').replace(/^\d{13,13}/, '$1').replace(/(\.\d{6})\d+/g, '$1')
-        : value.replace(',', '.').replace(/^\d{13,13}/, '$1').replace(/(\.\d{18})\d+/g, '$1');
+    return flag === "USDT.e"
+        ? value
+              .replace(",", ".")
+              .replace("-", "")
+              .replace(/^\d{13,13}/, "$1")
+              .replace(/(\.\d{6})\d+/g, "$1")
+        : value
+              .replace(",", ".")
+              .replace("-", "")
+              .replace(/^\d{13,13}/, "$1")
+              .replace(/(\.\d{18})\d+/g, "$1");
 }
 
 export const currentToken = (tokens, value) => {
@@ -62,7 +70,6 @@ async function fetchCommission({ accountId, amount, exchangeRate, token }) {
         viewMethods: ['version', 'name', 'symbol', 'decimals', 'ft_balance_of', 'spread'],
         changeMethods: ['buy', 'sell'],
     };
-    // const account = await wallet.getAccount(accountId);
     const usnContract = new nearApiJs.Contract(
         accountId,
         contractName,

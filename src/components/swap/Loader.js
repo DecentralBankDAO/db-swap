@@ -19,7 +19,6 @@ function Loader({ onRefreshMultiplier }) {
                 colors={['#C1B583', '#C1B583', '#C1B583', '#C1B583']}
                 trailColor='black'
                 colorsTime={[7, 5, 2, 0]}
-                trailColor='black'
                 onComplete={() => {
                     onRefreshMultiplier();
                     return { shouldRepeat: true, delay: 2 };

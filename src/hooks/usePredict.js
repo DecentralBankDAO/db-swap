@@ -24,9 +24,7 @@ const getPredict = async (account, amount, multiplier, symbol, accountId) => {
   );
   
     let result;
-    // console.log('parse', currentToken ? parseTokenAmount(amount * (10 ** 24), 0) : parseTokenAmount(amount * (10 ** 18), 0));
-    // console.log('accountId', accountId);
-
+  
     if(symbol === 'NEAR') {
          result = await usnContract.predict_buy({
             account: accountId ? accountId : 'dontcare',

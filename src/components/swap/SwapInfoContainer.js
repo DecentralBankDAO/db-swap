@@ -50,35 +50,21 @@ function SwapInfoContainer({
     
     return (
         <StyledContainer>
-            {/* <SwapInfoItem
-                leftText="Slippage tolerance"
-                slippageError={slippageError}
-                slippageValue={slippageValue}
-                setSlippageValue={setSlippageValue}
-            /> */}
             <SwapInfoItem
                 leftText={'Pair price'}
                 rightText={`1 ${isUsdt ? 'USDT.e' : 'USN'} = 1 ${symbol}`}
-                // rightText={`1 ${isNear ? 'NEAR' : 'USN'} = ${rate}`}
             />
             <SwapInfoItem
                 leftText={'Expected price'}
-                rightText={`${sliceAmount} ${token} = ${expectedAmount} ${symbol}`}
+                title={amount}
+                rightText={`${sliceAmount} ${token} = ${sliceAmount} ${symbol}`}
             />
             <SwapInfoItem
-                // isDots={isLoading}
                 leftText={'Trading fee'}
                 rightText={'0%'}
             />
             <SwapInfoItem
-                // isDots={isLoading}
                 leftText={'Minimum received'}
-                // rightText={formatAmount({
-                //     amount,
-                //     symbol,
-                //     tradingFee,
-                //     value: MinimumReceived({ token: symbol, balance: amount, exchangeRate }) - tradingFee,
-                // })}
                 rightText={(amount || 0) + ' USDT.e'}
             />
         </StyledContainer>

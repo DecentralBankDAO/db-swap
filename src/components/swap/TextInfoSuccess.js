@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Translate } from 'react-localize-redux';
 
 const TextInfoSuccess = ({ valueFrom, valueTo, symbol, errorFromHash }) => {
     const isNear = symbol === 'withdraw';
@@ -34,6 +33,5 @@ const TextInfoSuccess = ({ valueFrom, valueTo, symbol, errorFromHash }) => {
     
 };
 
-// const comparisonFn = (prev, next) => prev.valueTo !== next.valueTo;
 
 export default TextInfoSuccess;

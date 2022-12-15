@@ -170,7 +170,6 @@ const SwapAndSuccessContainer = ({
             try {
                 setLoadHash(true)
                 const res = await wallet._near.connection.provider.txStatus(hash, wallet.getAccountId())
-                console.log('res', res);
                 setMethodFromHash(res.transaction.actions[0].FunctionCall.method_name)
                 setDeposit(formatDeposit(res.transaction.actions[0].FunctionCall.method_name, res))
                 setLoadHash(false)
@@ -180,7 +179,6 @@ const SwapAndSuccessContainer = ({
                     setActiveView('success')
                 }
             } catch (e) {
-                console.log('error', e);
                 setErrorFromHash(formatError(e.message))
                 setActiveView('success')
             } finally {
@@ -188,14 +186,14 @@ const SwapAndSuccessContainer = ({
             }
         }
 
-        if(wallet && transactionHash) {
+        if (wallet && transactionHash.length === 44) {
             let hash;
             if(transactionHash.includes(',')) {
                 hash = transactionHash.split(',')[1]
             } else {
-                hash = transactionHash
+                hash = transactionHash;
             }
-            getHash(hash)
+            getHash(hash);
         }
         
     },[search, wallet])
@@ -212,7 +210,7 @@ const SwapAndSuccessContainer = ({
             ?  <div style={{ width: 400, height: 400}}/>
             : <>
             <StyledContainer className='small-centered'>
-            {activeView === VIEWS_SWAP.MAIN && !transactionHash && (
+            {activeView === VIEWS_SWAP.MAIN && (!transactionHash || transactionHash.length !== 44)  && (
                 <SwapPage
                     multipliers={multipliers}
                     setActiveView={setActiveView}
@@ -244,7 +242,6 @@ const SwapAndSuccessContainer = ({
                     inputValueFrom={deposit}
                     symbol={methodFromHash}
                     handleBackToSwap={async () => {
-                        // setInputValueFrom('');
                         await onHandleBackToSwap();
                     }}
                 />

@@ -9,7 +9,7 @@ import {
     formatTokenAmount,
     divNumbers,
     multiplyNumbers,
-    subsctractNumbers,
+    substractNumbers,
     plusNumbers,
 } from '../formatToken';
 import { replacedValue } from '../helpers';
@@ -91,7 +91,7 @@ const SwapPage = ({
             setInputValues({
                 fromAmount: value ? replaceValue : "",
                 toAmount: parseFloat(
-                    subsctractNumbers(
+                    substractNumbers(
                         value ? replaceValue : 0,
                         divNumbers(
                             multiplyNumbers(value ? replaceValue : 0, 0),
@@ -130,8 +130,7 @@ const SwapPage = ({
                 <AvailableToSwap
                     isUSN={false}
                     onClick={(balance) => {
-                        console.log('balance', balance);
-                        setInputValues({fromAmount: balance, toAmount: parseFloat(subsctractNumbers(balance, divNumbers(multiplyNumbers(balance, 0), 1))).toString()});
+                        setInputValues({fromAmount: balance, toAmount: parseFloat(substractNumbers(balance, divNumbers(multiplyNumbers(balance, 0), 1))).toString()});
                         setFullAmount(from?.balance);
                     }}
                     balance={from?.balance}
@@ -150,10 +149,6 @@ const SwapPage = ({
                 />
                 <AvailableToSwap
                     isUSN={true}
-                    // onClick={(balance) => {
-                    //     setInputValueFrom(balance);
-                    //     from?.onChainFTMetadata?.symbol === 'USN' && setUSNAmount(from?.balance);
-                    // }}
                     balance={to?.balance}
                     symbol={to?.onChainFTMetadata?.symbol}
                     decimals={to?.onChainFTMetadata?.decimals}

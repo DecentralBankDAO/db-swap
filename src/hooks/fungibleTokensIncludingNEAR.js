@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { selectMetadataSlice } from "../redux/slices/near";
 import { selectTokensWithMetadataForAccountId } from "../redux/slices/tokens";
-// import { wallet } from '../utils/wallet'
 
 
 

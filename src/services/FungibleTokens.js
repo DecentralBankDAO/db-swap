@@ -1,13 +1,5 @@
 import BN from 'bn.js';
 import * as nearApiJs from 'near-api-js';
-
-// import { ACCOUNT_HELPER_URL } from '../config';
-// import sendJson from '../tmp_fetch_send_json';
-// import {
-//     parseTokenAmount,
-//     formatTokenAmount,
-//     removeTrailingZeros
-// } from '../utils/amounts';
 import {
     wallet
 } from '../utils/wallet';
@@ -47,34 +39,6 @@ export default class FungibleTokens {
     // View functions are not signed, so do not require a real account!
     static viewFunctionAccount = wallet.getAccountBasic('dontcare')
 
-    // static getParsedTokenAmount(amount, symbol, decimals) {
-    //     const parsedTokenAmount = symbol === 'NEAR'
-    //         ? parseNearAmount(amount)
-    //         : parseTokenAmount(amount, decimals);
-
-    //     return parsedTokenAmount;
-    // }
-
-    // static getFormattedTokenAmount(amount, symbol, decimals) {
-    //     const formattedTokenAmount = symbol === 'NEAR'
-    //         ? formatNearAmount(amount, 5)
-    //         : removeTrailingZeros(formatTokenAmount(amount, decimals, 5));
-
-    //     return formattedTokenAmount;
-    // }
-
-    // static getUniqueTokenIdentity(token) {
-    //     return token.contractName || token.onChainFTMetadata?.symbol;
-    // }
-
-    // static async getLikelyTokenContracts({ accountId }) {
-    //     return sendJson('GET', `${ACCOUNT_HELPER_URL}/account/${accountId}/likelyTokens`);
-    // }
-
-    // static async getStorageBalance({ contractName, accountId }) {
-    //     return await this.viewFunctionAccount.viewFunction(contractName, 'storage_balance_of', { account_id: accountId });
-    // }
-
     static async getMetadata({ contractName }) {
         return this.viewFunctionAccount.viewFunction(contractName, 'ft_metadata');
     }
@@ -82,89 +46,6 @@ export default class FungibleTokens {
     static async getBalanceOf({ contractName, accountId }) {
         return this.viewFunctionAccount.viewFunction(contractName, 'ft_balance_of', { account_id: accountId });
     }
-
-    // async getEstimatedTotalFees({ accountId, contractName } = {}) {
-    //     if (contractName && accountId && !await this.isStorageBalanceAvailable({ contractName, accountId })) {
-    //         return new BN(FT_TRANSFER_GAS)
-    //             .add(new BN(FT_MINIMUM_STORAGE_BALANCE))
-    //             .add(new BN(FT_STORAGE_DEPOSIT_GAS))
-    //             .toString();
-    //     } else {
-    //         return FT_TRANSFER_GAS;
-    //     }
-    // }
-
-    // async getEstimatedTotalNearAmount({ amount }) {
-    //     return new BN(amount)
-    //         .add(new BN(await this.getEstimatedTotalFees()))
-    //         .toString();
-    // }
-
-    // async isStorageBalanceAvailable({ contractName, accountId }) {
-    //     const storageBalance = await this.constructor.getStorageBalance({ contractName, accountId });
-    //     return storageBalance?.total !== undefined;
-    // }
-
-    // async transfer({ accountId, contractName, amount, receiverId, memo }) {
-    //     // Ensure our awareness of 2FA being enabled is accurate before we submit any transaction(s)
-    //     const account = await wallet.getAccount(accountId);
-
-    //     if (contractName) {
-    //         const storageAvailable = await this.isStorageBalanceAvailable({ contractName, accountId: receiverId });
-
-    //         if (!storageAvailable) {
-    //             try {
-    //                 await this.transferStorageDeposit({
-    //                     account,
-    //                     contractName,
-    //                     receiverId,
-    //                     storageDepositAmount: FT_MINIMUM_STORAGE_BALANCE
-    //                 });
-    //             } catch (e) {
-    //                 // sic.typo in `mimimum` wording of responses, so we check substring
-    //                 // Original string was: 'attached deposit is less than the mimimum storage balance'
-    //                 if (e.message.includes('attached deposit is less than')) {
-    //                     await this.transferStorageDeposit({
-    //                         account,
-    //                         contractName,
-    //                         receiverId,
-    //                         storageDepositAmount: FT_MINIMUM_STORAGE_BALANCE_LARGE
-    //                     });
-    //                 }
-    //             }
-    //         }
-
-    //         return await account.signAndSendTransaction({
-    //             receiverId: contractName,
-    //             actions: [
-    //                 functionCall(
-    //                     'ft_transfer',
-    //                     {
-    //                         amount,
-    //                         memo: memo,
-    //                         receiver_id: receiverId,
-    //                     },
-    //                     FT_TRANSFER_GAS,
-    //                     FT_TRANSFER_DEPOSIT
-    //                 ),
-    //             ],
-    //         });
-    //     } else {
-    //         return await account.sendMoney(receiverId, amount);
-    //     }
-    // }
-
-    // async transferStorageDeposit({ account, contractName, receiverId, storageDepositAmount }) {
-    //     return account.signAndSendTransaction({
-    //         receiverId: contractName,
-    //         actions: [
-    //             functionCall('storage_deposit', {
-    //                 account_id: receiverId,
-    //                 registration_only: true,
-    //             }, FT_STORAGE_DEPOSIT_GAS, storageDepositAmount)
-    //         ]
-    //     });
-    // }
 }
 
 export const fungibleTokensService = new FungibleTokens();

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import FormButton from '../common/FormButton';
-import { divNumbers, multiplyNumbers, subsctractNumbers } from '../formatToken';
+import { divNumbers, multiplyNumbers, substractNumbers } from '../formatToken';
 import { exchangeRateTranslationFromHash } from '../helpers';
 import ImageContainer from '../ImageContainer';
 import TextInfoSuccess from '../TextInfoSuccess';
@@ -15,7 +15,7 @@ const Success = ({
     successValue
 }) => {
     const fee = divNumbers(multiplyNumbers(inputValueFrom, 1), 10000);
-    const valueTo = parseFloat(subsctractNumbers(inputValueFrom, fee));
+    const valueTo = parseFloat(substractNumbers(inputValueFrom, fee));
   return (
     <>
         <TextInfoSuccess

@@ -5,7 +5,7 @@
     "scripts": {
         "start": "react-scripts start",
         "start:with-sandbox": "export REACT_APP_NEAR_SANDBOX_KEYS=$(cat /tmp/near-sandbox/validator_key.json) && npm start",
-        "build": "react-scripts build",
+        "build": "GENERATE_SOURCEMAP=false react-scripts build",
         "test": "react-scripts test",
         "lint": "eslint .",
         "lint:fix": "eslint --fix ."

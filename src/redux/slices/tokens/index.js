@@ -101,45 +101,12 @@ const fetchTokens = createAsyncThunk(
                         })
                     );
                 } catch (e) {
-                    // Continue loading other likely contracts on failures
                     console.warn(`Failed to load FT for ${contractName}`, e);
                 }
             })
         );
     }
 );
-
-// const fetchToken = createAsyncThunk(
-//     `${SLICE_NAME}/fetchToken`,
-//     async ({ contractName, accountId }, thunkAPI) => {
-//         const { dispatch, getState } = thunkAPI;
-//         const {
-//             actions: { setContractMetadata },
-//         } = tokensSlice;
-//         try {
-//             const contractMetadata = await getCachedContractMetadataOrFetch(
-//                 contractName,
-//                 getState()
-//             );
-//             if (!selectOneContractMetadata(getState(), { contractName })) {
-//                 dispatch(
-//                     setContractMetadata({
-//                         contractName,
-//                         metadata: contractMetadata,
-//                     })
-//                 );
-//             }
-//             if (accountId) {
-//                 await dispatch(
-//                     fetchOwnedTokensForContract({ accountId, contractName })
-//                 );
-//             }
-//         } catch (e) {
-//             // Continue loading other likely contracts on failures
-//             console.warn(`Failed to load FT for ${contractName}`, e);
-//         }
-//     }
-// );
 
 const tokensSlice = createSlice({
     name: SLICE_NAME,

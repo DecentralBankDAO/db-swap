@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Translate } from 'react-localize-redux';
 import styled from 'styled-components';
 
 import classNames from './utils/classNames';
@@ -102,7 +101,8 @@ function SwapInfoItem({
     slippageValue,
     setSlippageValue,
     slippageError,
-    isDots =false
+    isDots =false,
+    title = null
 }) {
 
     const handleChange = (e) => {
@@ -112,7 +112,7 @@ function SwapInfoItem({
     };
 
     return (
-        <StyledInfoItem >
+        <StyledInfoItem title={title}>
             <div className="left_text">
                 {leftText}
             </div>
