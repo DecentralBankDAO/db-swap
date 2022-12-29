@@ -85,7 +85,7 @@ const SwapPage = ({
     const handleChange = (e) => {
         const { value } = e.target;
         const isUSDT = from?.onChainFTMetadata?.symbol === "USDT.e";
-        const replaceValue = replacedValue(e.target.dataset.token, value);
+        const replaceValue = replacedValue(value, balance);
 
         if (e.target.name === "FROM") {
             setInputValues({

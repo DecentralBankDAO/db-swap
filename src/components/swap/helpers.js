@@ -7,18 +7,15 @@ import { parseTokenAmount } from './formatToken';
 const { REACT_APP_NEAR_ENV } = process.env;
 const IS_MAINNET = REACT_APP_NEAR_ENV === 'testnet' ? false : true;
 
-export const replacedValue = (flag, value) => {
-    return flag === "USDT.e"
-        ? value
-              .replace(",", ".")
-              .replace("-", "")
-              .replace(/^\d{13,13}/, "$1")
-              .replace(/(\.\d{6})\d+/g, "$1")
-        : value
-              .replace(",", ".")
-              .replace("-", "")
-              .replace(/^\d{13,13}/, "$1")
-              .replace(/(\.\d{18})\d+/g, "$1");
+const min = 0.001
+
+export const replacedValue = (inputValue, balance) => {
+    const value = Math.max(min, Math.min(balance, Number(inputValue))).toString();
+    return value
+            .replace(",", ".")
+            .replace("-", "")
+            .replace(/^\d{13,13}/, "$1")
+            .replace(/(\.\d{18})\d+/g, "$1");
 }
 
 export const currentToken = (tokens, value) => {
